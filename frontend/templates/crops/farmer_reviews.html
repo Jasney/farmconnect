@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ farmer.username }}'s Reviews - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-circle me-2"></i>{{ farmer.username }}'s Reviews
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Farmer Info -->
+                    <div class="farmer-info mb-4 p-3 bg-light rounded">
+                        <div class="d-flex align-items-center">
+                            {% if farmer.profile_image %}
+                                <img src="{{ farmer.profile_image.url }}" alt="{{ farmer.username }}" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                    <i class="bi bi-person-fill text-white" style="font-size: 1.5rem;"></i>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <h5 class="mb-1">{{ farmer.get_full_name|default:farmer.username }}</h5>
+                                <p class="text-muted mb-1">{{ farmer.location|default:"Location not specified" }}</p>
+                                <div class="rating-summary">
+                                    {% for i in "12345"|make_list %}
+                                        <i class="bi bi-star{% if average_rating and forloop.counter <= average_rating|floatformat:0 %}s-fill text-warning{% else %} text-muted{% endif %}"></i>
+                                    {% endfor %}
+                                    <span class="ms-2">{{ average_rating|floatformat:1|default:"No ratings" }} ({{ total_reviews }} reviews)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews List -->
+                    {% if reviews %}
+                        <div class="reviews-list">
+                            {% for review in reviews %}
+                                <div class="review-item mb-4 p-3 border rounded">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="review-header">
+                                            <h6 class="mb-1">{{ review.title }}</h6>
+                                            <div class="rating">
+                                                {% for i in "12345"|make_list %}
+                                                    <i class="bi bi-star{% if forloop.counter <= review.rating %}-fill{% endif %} text-warning"></i>
+                                                {% endfor %}
+                                                <small class="text-muted ms-2">{{ review.created_at|date:"M d, Y" }}</small>
+                                            </div>
+                                        </div>
+                                        {% if review.verified_purchase %}
+                                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Verified Purchase</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <p class="review-comment mb-2">{{ review.comment }}</p>
+
+                                    <div class="review-meta text-muted small">
+                                        <span>Product: {{ review.crop.name }}</span>
+                                        {% if review.is_approved %}
+                                            <span class="ms-3"><i class="bi bi-check-circle text-success"></i> Approved</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-chat-square-text text-muted" style="font-size: 3rem;"></i>
+                            <h5 class="mt-3 text-muted">No Reviews Yet</h5>
+                            <p class="text-muted">{{ farmer.username }} hasn't received any reviews yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Rating Breakdown -->
+            {% if reviews %}
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h6 class="mb-0">Rating Breakdown</h6>
+                    </div>
+                    <div class="card-body">
+                        {% for rating in "54321"|make_list %}
+                            {% with reviews|length as total_count %}
+                                {% with reviews|filter_rating:rating|length as rating_count %}
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="me-2">{{ rating }} <i class="bi bi-star-fill text-warning"></i></span>
+                                        <div class="progress flex-grow-1" style="height: 8px;">
+                                            <div class="progress-bar bg-warning" style="width: {% if total_count %}{{ rating_count|mul:100|div:total_count }}{% else %}0{% endif %}%"></div>
+                                        </div>
+                                        <span class="ms-2 small">{{ rating_count }}</span>
+                                    </div>
+                                {% endwith %}
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Quick Actions -->
+            <div class="card shadow mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Actions</h6>
+                </div>
+                <div class="card-body">
+                    {% if user.is_authenticated and user != farmer %}
+                        <a href="{% url 'start_conversation' farmer.id %}" class="btn btn-success w-100 mb-2">
+                            <i class="bi bi-chat-dots me-2"></i>Message {{ farmer.username }}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'crop_list' %}" class="btn btn-outline-success w-100">
+                        <i class="bi bi-arrow-left me-2"></i>Back to Listings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.review-item {
+    transition: box-shadow 0.2s ease;
+}
+
+.review-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.rating-summary .bi-star {
+    font-size: 1.1rem;
+}
+</style>
+{% endblock %}

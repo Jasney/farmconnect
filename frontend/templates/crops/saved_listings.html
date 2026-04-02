@@ -1,0 +1,45 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Saved Listings - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="row justify-content-between align-items-center mb-4">
+    <div class="col">
+        <h2 class="text-success"><i class="bi bi-heart-fill me-2"></i>Saved Listings</h2>
+    </div>
+    <div class="col-auto">
+        <a href="{% url 'crop_list' %}" class="btn btn-outline-success">Browse Crops</a>
+    </div>
+</div>
+
+{% if saved_crops %}
+<div class="row g-4">
+    {% for saved in saved_crops %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm h-100">
+                {% if saved.crop.image %}
+                <img src="{{ saved.crop.image.url }}" class="card-img-top" alt="{{ saved.crop.name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ saved.crop.name }}</h5>
+                    <p class="card-text">{{ saved.crop.description|truncatechars:100 }}</p>
+                    <p class="text-success fw-bold">Ksh {{ saved.crop.price }} / {{ saved.crop.unit }}</p>
+                    <a href="{% url 'crop_detail' saved.crop.id %}" class="btn btn-outline-success btn-sm">View</a>
+                    <a href="{% url 'unsave_crop' saved.id %}" class="btn btn-success btn-sm">Remove</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="bi bi-heart"></i>
+    <h5>No saved listings yet</h5>
+    <p>Save your favorite crops while browsing.</p>
+</div>
+{% endif %}
+{% endblock %}
+
+
+

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Appeal Detail - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Appeal #{{ appeal.id }}</h1>
+            <p>Review this appeal and accept or reject it.</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'admin_panel:account_appeals' %}" class="btn btn-outline-secondary">Back to Appeals</a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Candidate Farmer</h5>
+            <p><strong>{{ appeal.farmer.get_full_name|default:appeal.farmer.username }}</strong> ({{ appeal.farmer.email }})</p>
+            <p><strong>Current Status:</strong> {{ appeal.farmer.account_status }}</p>
+            <p><strong>Issue:</strong> {{ appeal.issue_summary }}</p>
+            <p><strong>Message:</strong></p>
+            <div class="border p-3 bg-light">{{ appeal.message|linebreaks }}</div>
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Action</label>
+            <select name="action" class="form-select" required>
+                <option value="approve">Approve Appeal (unblock farmer)</option>
+                <option value="reject">Reject Appeal</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Admin Notes</label>
+            <textarea name="admin_notes" class="form-control" rows="4">{{ appeal.admin_notes }}</textarea>
+        </div>
+        <button class="btn btn-success">Save Decision</button>
+    </form>
+</div>
+{% endblock %}

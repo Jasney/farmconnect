@@ -1,0 +1,66 @@
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+/staticfiles/
+/media/
+*.pyc
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project-specific utility scripts (optional - regenerate as needed)
+# These are one-off scripts and can be recreated from documentation
+create_db.py
+create_superuser.py
+fix_admin.py
+manage_admins.py
+update_admin_role.py
+
+# Development documentation (keep in repo but consider moving to wiki)
+# AUTHENTICATION_CHANGES.md
+# DASHBOARD_DEPLOYMENT.md
+# DASHBOARD_DOCUMENTATION_INDEX.md
+# TODO.md
+# setup_instructions.md

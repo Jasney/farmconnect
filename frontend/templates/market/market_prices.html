@@ -1,0 +1,96 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Market Prices - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="text-success"><i class="bi bi-cash-stack me-2"></i>Market Prices</h2>
+    </div>
+    
+    <div class="col-auto">
+        {% if user.is_authenticated and user.role == 'admin' %}
+            <a href="{% url 'market_price_create' %}" class="btn btn-success">Add Price</a>
+        {% else %}
+            <a href="{% url 'market_price_create' %}" class="btn btn-success disabled" tabindex="-1" aria-disabled="true">Add Price (admin only)</a>
+        {% endif %}
+    </div>
+    
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <div class="col-md-4"><input name="crop_name" value="" class="form-control" placeholder="Crop name"></div>
+            <div class="col-md-4"><input name="location" value="" class="form-control" placeholder="Location"></div>
+            <div class="col-md-2"><button class="btn btn-success w-100">Filter</button></div>
+        </form>
+    </div>
+</div>
+
+
+<table class="table table-striped listing-table">
+    <thead>
+    <tr>
+        <th>Crop</th>
+        <th>Price</th>
+        <th>Unit</th>
+        <th>Location</th>
+        <th>Updated</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for price in market_prices %}
+    <tr>
+        <td>{{ price.crop_name }}</td>
+        <td>Ksh {{ price.price }}</td>
+        <td>{{ price.unit }}</td>
+        <td>{{ price.location }}</td>
+        <td>{{ price.updated_at|date:"M d, Y" }}</td>
+        
+        <td>
+            <a href="{% url 'market_price_edit' price.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+            <a href="{% url 'market_price_delete' price.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6" class="text-center">No market prices available.</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if is_paginated %}
+<div class="d-flex justify-content-center mt-4">
+    <nav aria-label="Market prices pagination">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.crop_name %}&crop_name={{ request.GET.crop_name }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}">Previous</a>
+                </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if request.GET.crop_name %}&crop_name={{ request.GET.crop_name }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.crop_name %}&crop_name={{ request.GET.crop_name }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}">Next</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+{% endblock %}
+
+
+
+

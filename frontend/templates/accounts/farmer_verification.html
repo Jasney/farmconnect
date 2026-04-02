@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Farmer Verification - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card p-4">
+                <h3 class="mb-3">Farmer Account Verification</h3>
+                <p class="text-muted">Submit your documents and details for verification. This process helps ensure trust and security on our platform.</p>
+
+                {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <h5 class="mb-3">Personal Information</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="location" class="form-label">Location *</label>
+                            <input type="text" class="form-control" id="location" name="location" value="{{ user.location }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="farm_size" class="form-label">Farm Size (acres/hectares)</label>
+                            <input type="text" class="form-control" id="farm_size" name="farm_size">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="experience_years" class="form-label">Years of Experience</label>
+                            <input type="number" class="form-control" id="experience_years" name="experience_years" min="0">
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3 mt-4">Required Documents</h5>
+                    <div class="mb-3">
+                        <label for="id_document" class="form-label">National ID / Passport * (PDF, JPG, PNG)</label>
+                        <input type="file" class="form-control" id="id_document" name="id_document" accept=".pdf,.jpg,.jpeg,.png" required>
+                        <div class="form-text">Upload a clear photo or scan of your ID document.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="business_permit" class="form-label">Business Permit (Optional)</label>
+                        <input type="file" class="form-control" id="business_permit" name="business_permit" accept=".pdf,.jpg,.jpeg,.png">
+                        <div class="form-text">If you have a business registration document.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="land_certificate" class="form-label">Land Certificate (Optional)</label>
+                        <input type="file" class="form-control" id="land_certificate" name="land_certificate" accept=".pdf,.jpg,.jpeg,.png">
+                        <div class="form-text">If you have land ownership documents.</div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>What happens next?</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Your documents will be reviewed by our admin team within 24-48 hours</li>
+                            <li>You'll receive an email notification with the decision</li>
+                            <li>Once verified, you'll have full access to post crops and communicate with buyers</li>
+                        </ul>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Submit for Verification</button>
+                    <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary ms-2">Back to Dashboard</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

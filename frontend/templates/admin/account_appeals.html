@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Account Appeals - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Account Appeals</h1>
+            <p>Review appeals submitted by blocked farmers and decide whether to reactivate or deny them.</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'admin_panel:dashboard' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <p class="mb-0"><strong>Pending appeals:</strong> {{ total_pending }}</p>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        {% for appeal in appeals %}
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Appeal #{{ appeal.id }}</h5>
+                    <p class="card-text"><strong>Farmer:</strong> {{ appeal.farmer.get_full_name|default:appeal.farmer.username }}</p>
+                    <p class="card-text"><strong>Status:</strong> {{ appeal.get_status_display }}</p>
+                    <p class="card-text"><strong>Submitted:</strong> {{ appeal.created_at|date:'F d, Y H:i' }}</p>
+                    <a class="btn btn-sm btn-primary" href="{% url 'admin_panel:appeal_detail' appeal.id %}">Review</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">No appeals submitted yet.</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

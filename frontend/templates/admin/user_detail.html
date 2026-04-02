@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block title %}User Details - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="text-success">
+                <i class="bi bi-person-circle me-2"></i>
+                User Details
+            </h1>
+            <p class="text-muted">Detailed profile information for {{ profile_user.get_full_name|default:profile_user.username }}</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'admin_panel:user_management' %}" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-arrow-left"></i> Back to Users
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- User Profile -->
+        <div class="col-lg-4 mb-4">
+            <div class="glass-card h-100">
+                <div class="card-body text-center">
+                    {% if profile_user.profile_image %}
+                        <img src="{{ profile_user.profile_image.url }}" class="rounded-circle mb-3" width="120" height="120" alt="Profile">
+                    {% else %}
+                        <div class="bg-secondary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                            <i class="bi bi-person-fill text-white" style="font-size: 3rem;"></i>
+                        </div>
+                    {% endif %}
+                    <h4>{{ profile_user.get_full_name|default:profile_user.username }}</h4>
+                    <p class="text-muted">{{ profile_user.email }}</p>
+                    <div class="mb-3">
+                        <span class="badge {% if profile_user.role == 'farmer' %}bg-success{% else %}bg-info{% endif %} fs-6">
+                            {{ profile_user.get_role_display }}
+                        </span>
+                        <span class="badge {% if profile_user.account_status == 'active' %}bg-success{% elif profile_user.account_status == 'suspended' %}bg-danger{% else %}bg-warning{% endif %} fs-6 ms-1">
+                            {{ profile_user.get_account_status_display }}
+                        </span>
+                    </div>
+                    {% if profile_user.bio %}
+                    <p class="text-muted small">{{ profile_user.bio }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- User Information -->
+        <div class="col-lg-8">
+            <div class="row">
+                <!-- Basic Info -->
+                <div class="col-12 mb-4">
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Basic Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Username:</strong> {{ profile_user.username }}</p>
+                                    <p><strong>Email:</strong> {{ profile_user.email }}</p>
+                                    <p><strong>Phone:</strong> {{ profile_user.phone_number|default:"Not provided" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Joined:</strong> {{ profile_user.date_joined|date:"F d, Y" }}</p>
+                                    <p><strong>Last Login:</strong> {{ profile_user.last_login|date:"F d, Y H:i"|default:"Never" }}</p>
+                                    <p><strong>Email Verified:</strong>
+                                        {% if profile_user.is_verified_email %}
+                                            <span class="text-success"><i class="bi bi-check-circle"></i> Yes</span>
+                                        {% else %}
+                                            <span class="text-danger"><i class="bi bi-x-circle"></i> No</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Farmer Specific Info -->
+                {% if profile_user.role == 'farmer' %}
+                <div class="col-12 mb-4">
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-tree me-2"></i>Farmer Profile</h5>
+                        </div>
+                        <div class="card-body">
+                        {% if profile_user.farmer_profile %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Farm Name:</strong> {{ profile_user.farmer_profile.farm_name|default:"Not set" }}</p>
+                                    <p><strong>Location:</strong> {{ profile_user.farmer_profile.location|default:"Not set" }}</p>
+                                    <p><strong>Rating:</strong>
+                                        {% if profile_user.farmer_profile.rating_score %}
+                                            <span class="text-warning">
+                                                {% for i in "12345"|make_list %}
+                                                    {% if forloop.counter <= profile_user.farmer_profile.rating_score %}
+                                                        <i class="bi bi-star-fill"></i>
+                                                    {% else %}
+                                                        <i class="bi bi-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                ({{ profile_user.farmer_profile.rating_score }})
+                                            </span>
+                                        {% else %}
+                                            No ratings yet
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Products Listed:</strong> {{ products|length }}</p>
+                                    <p><strong>Reviews Received:</strong> {{ reviews|length }}</p>
+                                    <p><strong>Verification Status:</strong>
+                                        <span class="badge {% if profile_user.farmer_verification_status == 'verified' %}bg-success{% elif profile_user.farmer_verification_status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                            {{ profile_user.get_farmer_verification_status_display }}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endif %}
+
+                <!-- Reports Against User -->
+                {% if reports_against %}
+                <div class="col-12 mb-4">
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h5 class="mb-0 text-danger"><i class="bi bi-flag me-2"></i>Reports Against User ({{ reports_against|length }})</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for report in reports_against %}
+                            <div class="border-bottom pb-3 mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <strong>{{ report.get_severity_display }} Report</strong>
+                                        <span class="badge bg-{{ report.status|lower }}">{{ report.status }}</span>
+                                    </div>
+                                    <small class="text-muted">{{ report.created_at|date:"M d, Y H:i" }}</small>
+                                </div>
+                                <p class="mb-1">{{ report.description }}</p>
+                                <small class="text-muted">Reported by: {{ report.reporter.username }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Admin Actions -->
+                {% if actions_against %}
+                <div class="col-12 mb-4">
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h5 class="mb-0 text-warning"><i class="bi bi-shield-exclamation me-2"></i>Admin Actions ({{ actions_against|length }})</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for action in actions_against %}
+                            <div class="border-bottom pb-3 mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <strong>{{ action.get_action_type_display }}</strong>
+                                    </div>
+                                    <small class="text-muted">{{ action.timestamp|date:"M d, Y H:i" }}</small>
+                                </div>
+                                <p class="mb-1">{{ action.description }}</p>
+                                {% if action.reason %}
+                                <p class="mb-1"><strong>Reason:</strong> {{ action.reason }}</p>
+                                {% endif %}
+                                <small class="text-muted">By: {{ action.admin.username }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %}

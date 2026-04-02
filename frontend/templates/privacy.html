@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Privacy Policy - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Main Header -->
+            <div class="glass-dark text-center mb-4">
+                <h1 class="mb-3">Privacy Policy</h1>
+                <p class="lead mb-0">Your privacy is important to us. Here's how we collect, use, and protect your information.</p>
+            </div>
+            
+            <!-- What We Collect Section -->
+            <div class="glass-card mb-4">
+                <h5 class="mb-3" style="color: #a5e07f; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">What we collect</h5>
+                <ul class="small mb-0">
+                    <li>Personal information (name, email, phone)</li>
+                    <li>Crop listings and photos</li>
+                    <li>Messages and communications</li>
+                    <li>Usage data and preferences</li>
+                </ul>
+            </div>
+
+            <!-- How We Use It Section -->
+            <div class="glass-card mb-4">
+                <h5 class="mb-3" style="color: #a5e07f; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">How we use it</h5>
+                <ul class="small mb-0">
+                    <li>Provide marketplace services</li>
+                    <li>Improve platform features</li>
+                    <li>Send notifications and updates</li>
+                    <li>Prevent fraud and abuse</li>
+                </ul>
+            </div>
+
+            <!-- Your Rights Section -->
+            <div class="glass-card mb-4">
+                <h5 class="mb-3" style="color: #a5e07f; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">Your rights</h5>
+                <ul class="small mb-0">
+                    <li>Access your data anytime</li>
+                    <li>Delete your account</li>
+                    <li>Opt out of marketing emails</li>
+                    <li>Correct inaccurate information</li>
+                </ul>
+            </div>
+
+            <!-- Contact CTA -->
+            <div class="text-center">
+                <a href="{% url 'contact' %}" class="btn btn-success btn-lg">Questions? Contact us</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

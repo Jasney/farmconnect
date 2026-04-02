@@ -1,0 +1,49 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Listing Moderation - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="text-success"><i class="bi bi-shield-lock me-2"></i>Listing Moderation</h2>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table listing-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Farmer</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for crop in crops %}
+                <tr>
+                    <td>{{ crop.name }}</td>
+                    <td>{{ crop.farmer.username }}</td>
+                    <td>${{ crop.price }}</td>
+                    <td>{% if crop.is_active %}Active{% else %}Inactive{% endif %}</td>
+                    <td>
+                        <form method="post" class="d-flex gap-2">
+                            {% csrf_token %}
+                            <input type="hidden" name="crop_id" value="{{ crop.id }}" />
+                            <button name="action" value="deactivate" class="btn btn-sm btn-warning">Deactivate</button>
+                            <button name="action" value="activate" class="btn btn-sm btn-success">Activate</button>
+                            <button name="action" value="remove" class="btn btn-sm btn-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,81 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Messages - Farm Connect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/messages.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="message-header">
+        <h2><i class="bi bi-chat-dots me-2"></i>Messages</h2>
+        <a href="{% url 'send_message' %}" class="btn btn-compose">
+            <i class="bi bi-pencil me-2"></i>Write Message
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Received Messages -->
+        <div class="col-lg-6">
+            <div class="message-card">
+                <div class="message-card-header">
+                    <i class="bi bi-inbox me-2"></i>Received Messages
+                </div>
+                <div class="message-card-body">
+                    {% if received_messages %}
+                        {% for message in received_messages %}
+                            <a href="{% url 'view_message' message.id %}" class="message-item text-decoration-none text-dark">
+                                <div class="message-flex">
+                                    <div class="message-col">
+                                        <div class="message-sender">{{ message.sender.get_full_name|default:message.sender.username }}</div>
+                                        <div class="message-preview">{{ message.content }}</div>
+                                        <div class="message-time">{{ message.timestamp|date:"M d, Y H:i" }}</div>
+                                    </div>
+                                    {% if not message.is_read %}
+                                        <span class="badge-new ms-2">New</span>
+                                    {% endif %}
+                                </div>
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <p class="mb-0">No received messages yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sent Messages -->
+        <div class="col-lg-6">
+            <div class="message-card">
+                <div class="message-card-header">
+                    <i class="bi bi-send me-2"></i>Sent Messages
+                </div>
+                <div class="message-card-body">
+                    {% if sent_messages %}
+                        {% for message in sent_messages %}
+                            <div class="message-item">
+                                <div>
+                                    <div class="message-sender">To: {{ message.receiver.get_full_name|default:message.receiver.username }}</div>
+                                    <div class="message-preview">{{ message.content }}</div>
+                                    <div class="message-time">{{ message.timestamp|date:"M d, Y H:i" }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="bi bi-send"></i>
+                            <p class="mb-0">No sent messages yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

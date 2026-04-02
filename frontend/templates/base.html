@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Connect Platform</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    
+</head>
+<body class="global-bg">
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container-fluid px-3 justify-content-center">
+            <a class="navbar-brand" href="{% url 'landing' %}">
+                <i class="bi bi-tree-fill me-2"></i>Farm Connect
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link active-pill" href="{% url 'landing' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'about' %}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'crop_list' %}">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:farmer_rankings' %}">Rankings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-success" href="{% url 'contact' %}">
+                            <span>Contact</span>
+                            <i class="bi bi-arrow-up-right"></i>
+                        </a>
+                    </li>
+                    
+                    {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="btn btn-success text-white ms-lg-2" href="{% url 'accounts:register' %}" style="white-space: nowrap; padding: 0.6rem 1rem !important; font-size: 0.95rem;">Sign Up</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Hi, {{ user.get_full_name|default:user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'messages:inbox' %}">Messages</a></li>
+                            {% if user.is_staff %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'admin_panel:dashboard' %}">Admin Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'admin_panel:ai_monitoring' %}">AI Monitoring</a></li>
+                                <li><a class="dropdown-item" href="{% url 'admin_panel:user_management' %}">User Management</a></li>
+                                <li><a class="dropdown-item" href="{% url 'admin_panel:user_reports' %}">Reports</a></li>
+                                <li><a class="dropdown-item" href="{% url 'admin_panel:activity_logs' %}">Activity Logs</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-fluid py-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-dark text-light py-3">
+        <div class="container">
+            <div class="row gy-2 mb-2">
+                <div class="col-md-3 col-sm-6">
+                    <h6 class="text-success fw-bold small">Farm Connect</h6>
+                    <p class="small text-muted mb-0">Connecting farmers & buyers.</p>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                    <h6 class="text-uppercase text-success fw-bold small mb-2">Company</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="{% url 'about' %}" class="text-light text-decoration-none">About</a></li>
+                        <li><a href="{% url 'privacy' %}" class="text-light text-decoration-none">Privacy</a></li>
+                        <li><a href="{% url 'terms' %}" class="text-light text-decoration-none">Terms</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                    <h6 class="text-uppercase text-success fw-bold small mb-2">Community</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="{% url 'crop_list' %}" class="text-light text-decoration-none">Products</a></li>
+                        <li><a href="{% url 'help' %}" class="text-light text-decoration-none">Help</a></li>
+                        <li><a href="{% url 'faq' %}" class="text-light text-decoration-none">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                    <h6 class="text-uppercase text-success fw-bold small mb-2">Support</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="{% url 'contact' %}" class="text-light text-decoration-none">Contact</a></li>
+                        <li><a href="{% url 'help' %}" class="text-light text-decoration-none">Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-sm-12">
+                    <h6 class="text-uppercase text-success fw-bold small mb-2">Follow</h6>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="text-light text-decoration-none" title="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-light text-decoration-none" title="Twitter"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="text-light text-decoration-none" title="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-light text-decoration-none" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-secondary my-2">
+            <div class="text-center small text-muted">&copy; 2026 Farm Connect.</div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+    
+    <script>
+        // Hide navbar on scroll down, show on scroll up
+        let lastScrollTop = 0;
+        const navbar = document.querySelector('.navbar');
+        
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Scrolling down - hide navbar
+            if (scrollTop > lastScrollTop) {
+                navbar.classList.add('navbar-hidden');
+            } 
+            // Scrolling up - show navbar
+            else {
+                navbar.classList.remove('navbar-hidden');
+            }
+            
+            // Only hide if scrolled more than 50px (prevent flickering at top)
+            if (scrollTop < 50) {
+                navbar.classList.remove('navbar-hidden');
+            }
+            
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

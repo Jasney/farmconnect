@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About - Farm Connect{% endblock %}
+
+{% block extra_css %}
+<style>
+    body { background-color: #f8fcf5 !important; background-image: none !important; }
+    
+    /* Hero Section with Overlay */
+    .about-hero {
+        position: relative;
+        background-image: url('https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=1600&q=80');
+        background-size: cover;
+        background-position: center;
+        padding: 5rem 2rem;
+        overflow: hidden;
+    }
+    
+    .about-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.75) 100%);
+        pointer-events: none;
+    }
+    
+    .about-hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+        color: white;
+    }
+    
+    .about-hero h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+    
+    .about-hero p {
+        font-size: 1.1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Features Section */
+    .features-section {
+        padding: 3rem 0;
+    }
+    
+    .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+        color: #3ead5d;
+        margin-bottom: 1rem;
+    }
+    
+    .feature-card h4 {
+        color: #2d8659;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .feature-card p {
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    /* Highlight Box */
+    .highlight-box {
+        background: linear-gradient(135deg, #2d8659 0%, #3ead5d 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 6px 20px rgba(45, 134, 89, 0.15);
+    }
+    
+    .highlight-box h4 {
+        color: #a5e07f;
+    }
+
+    /* Force headings and key text into white containers for readability */
+    .about-hero-content h1,
+    .about-hero-content h2,
+    .about-hero-content p,
+    .container h2,
+    .container h3,
+    .container h4,
+    .feature-card h4,
+    .highlight-box h4,
+    .cta-section h2 {
+        background: rgba(255, 255, 255, 0.95);
+        color: #1f472f;
+        padding: 0.5rem 0.8rem;
+        border-radius: 10px;
+        display: inline-block;
+    }
+
+    .about-hero-content h1,
+    .about-hero-content h2,
+    .about-hero-content p,
+    .container h2,
+    .container h3,
+    .container h4,
+    .feature-card h4,
+    .highlight-box h4,
+    .cta-section h2 {
+        box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Overlay -->
+<div class="about-hero">
+    <div class="about-hero-content">
+        <h1>About Farm Connect</h1>
+        <p class="lead">Empowering farmers with technology to access fair markets and connect directly with buyers across Kenya.</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Mission Section -->
+            <div class="highlight-box mb-4">
+                <div class="d-flex align-items-start">
+                    <i class="bi bi-compass-fill me-3" style="font-size: 1.5rem;"></i>
+                    <div>
+                        <h4><i class="bi bi-globe me-2"></i>Our Mission</h4>
+                        <p class="mb-0">To bridge the gap between farmers and buyers through a transparent, efficient digital marketplace that empowers rural communities with fair pricing and market access.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Why Farm Connect -->
+            <div class="highlight-box mb-5">
+                <h4 class="mb-3"><i class="bi bi-lightning-fill me-2"></i>Why Farm Connect?</h4>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li class="mb-2">✅ <strong>Direct Access</strong> - Farmers list directly, buyers purchase directly</li>
+                    <li class="mb-2">✅ <strong>Fair Pricing</strong> - Transparent KES pricing with no hidden fees</li>
+                    <li class="mb-2">✅ <strong>Instant Networking</strong> - Connect with buyers and sellers instantly</li>
+                    <li class="mb-2">✅ <strong>Fast Transactions</strong> - Move products quickly</li>
+                </ul>
+            </div>
+
+            <!-- Features Grid -->
+            <h3 class="text-center mb-4" style="color: #2d8659; font-weight: 700;">Our Core Features</h3>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h4>Security First</h4>
+                        <p>Your data is protected with enterprise-grade security and role-based access control. Your privacy matters.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-speedometer2"></i>
+                        </div>
+                        <h4>Fast & Reliable</h4>
+                        <p>Optimized for mobile and works great on 2G networks. Built for field use in rural areas.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-diagram-3"></i>
+                        </div>
+                        <h4>Simple to Use</h4>
+                        <p>Intuitive interface designed for farmers and buyers. Get started in minutes with no technical skills needed.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-chat-dots"></i>
+                        </div>
+                        <h4>Direct Messaging</h4>
+                        <p>Chat instantly with buyers or farmers. Negotiate prices and arrange delivery all in one place.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="highlight-box text-center mt-5">
+                <h4 class="mb-3">Ready to Get Started?</h4>
+                <p class="mb-4">Join thousands of farmers and buyers who are transforming agriculture in Kenya.</p>
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg" style="color: #2d8659; font-weight: 600;">
+                        <i class="bi bi-pencil-square me-2"></i>Sign Up Now
+                    </a>
+                {% else %}
+                    <a href="{% url 'accounts:dashboard' %}" class="btn btn-light btn-lg" style="color: #2d8659; font-weight: 600;">
+                        <i class="bi bi-house-door me-2"></i>Go to Dashboard
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

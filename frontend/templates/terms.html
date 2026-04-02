@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Terms of Service - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header Section -->
+            <div class="glass-dark text-center mb-4">
+                <h1 class="mb-3">Terms of Service</h1>
+                <p class="lead mb-0">Please read these terms carefully before using our platform.</p>
+            </div>
+            
+            <!-- Account Responsibility Section -->
+            <div class="glass-card mb-4">
+                <h5 style="color: #a5e07f; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">1. Account Responsibility</h5>
+                <p class="mb-0">You are responsible for maintaining confidentiality of your account and password.</p>
+            </div>
+            
+            <!-- Listing Accuracy Section -->
+            <div class="glass-card mb-4">
+                <h5 style="color: #a5e07f; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">2. Listing Accuracy</h5>
+                <p class="mb-0">All crop listings must be accurate. False information may result in account suspension.</p>
+            </div>
+            
+            <!-- Prohibited Activities Section -->
+            <div class="glass-card mb-4">
+                <h5 style="color: #a5e07f; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">3. Prohibited Activities</h5>
+                <ul class="mb-0">
+                    <li>Posting fake listings</li>
+                    <li>Spam messaging</li>
+                    <li>Harassment of other users</li>
+                </ul>
+            </div>
+            
+            <!-- Contact Support -->
+            <div class="text-center mt-5">
+                <a href="{% url 'contact' %}" class="btn btn-success btn-lg">Contact Support</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

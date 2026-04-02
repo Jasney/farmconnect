@@ -1,0 +1,273 @@
+/* Dashboard Styles */
+
+/* Clean background for dashboard */
+body.dashboard-page {
+    background-image: none !important;
+    background-color: #f8fcf5 !important;
+}
+
+/* Micro-interactions */
+.stat-card {
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: default;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(76, 175, 80, 0.15);
+}
+
+.card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Skeleton Loading Animation */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-text { 
+    height: 16px; 
+    border-radius: 4px; 
+    margin-bottom: 8px; 
+}
+.skeleton-title { 
+    height: 24px; 
+    border-radius: 4px; 
+    margin-bottom: 12px; 
+    width: 60%; 
+}
+.skeleton-card { 
+    height: 100px; 
+    border-radius: 8px; 
+}
+
+/* Status Indicators */
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.status-dot.active {
+    background: #4CAF50;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.6);
+}
+
+.status-dot.inactive {
+    background: #f44336;
+    box-shadow: 0 0 10px rgba(244, 67, 54, 0.4);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Sparkline Chart */
+.sparkline-container {
+    margin-top: 1rem;
+    padding: 0.8rem;
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(52, 168, 83, 0.05) 100%);
+    border-radius: 8px;
+    border-left: 3px solid #4CAF50;
+}
+
+.sparkline-text {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+.sparkline-trend {
+    font-weight: 700;
+    color: #4CAF50;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, #f5f5f5 0%, #f9f9f9 100%);
+    border-radius: 12px;
+    border: 2px dashed rgba(76, 175, 80, 0.2);
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: rgba(76, 175, 80, 0.4);
+    margin-bottom: 1rem;
+}
+
+.empty-state h5 {
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.empty-state p {
+    color: #666;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.empty-state .btn {
+    padding: 0.6rem 1.5rem;
+}
+
+/* Interactive Rows */
+.activity-row {
+    transition: all 0.2s ease;
+    padding: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.activity-row:hover {
+    background-color: rgba(76, 175, 80, 0.03);
+    transform: translateX(4px);
+    box-shadow: -3px 0 8px rgba(76, 175, 80, 0.1);
+}
+
+/* Price Alert Badge */
+.price-alert {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    background: linear-gradient(135deg, #FFF3CD 0%, #FFECB5 100%);
+    border: 1px solid #FFE082;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #856404;
+    margin-bottom: 0.5rem;
+}
+
+.price-up { 
+    color: #4CAF50; 
+}
+.price-down { 
+    color: #f44336; 
+}
+
+/* Sustainability Badge */
+.sustainability-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+    border: 1px solid #81C784;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #2E7D32;
+    margin-top: 1rem;
+}
+
+.sustainability-score {
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+/* Filter Bar */
+.filter-bar {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    margin-bottom: 1.5rem;
+}
+
+.filter-bar .form-control,
+.filter-bar .form-select {
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    height: 38px;
+    font-size: 0.95rem;
+}
+
+.filter-bar .form-control:focus,
+.filter-bar .form-select:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.15);
+}
+
+/* List Group Interactive */
+.list-group-item {
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.list-group-item:hover {
+    background-color: rgba(76, 175, 80, 0.03);
+    border-left-color: #4CAF50;
+    padding-left: calc(1rem + 2px);
+}
+
+/* Utility Classes for Common Inline Styles */
+.stat-label-small {
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.stat-value-green {
+    color: #7dd33f;
+}
+
+.stat-card-py {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
+
+.text-muted-small {
+    color: #999;
+}
+
+.list-style-none {
+    list-style: none;
+    padding-left: 0;
+}
+
+.icon-lg {
+    font-size: 1.5rem;
+}
+
+.icon-2xl {
+    font-size: 2rem;
+}
+
+.icon-3xl {
+    font-size: 3rem;
+}
+
+.m-0 {
+    margin: 0;
+}
+
+.empty-state-compact {
+    margin-top: 1rem;
+}
+
+.empty-state-spacious {
+    margin-top: 1rem;
+    padding: 1.5rem 1rem;
+}
+
+.sustainability-label {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}

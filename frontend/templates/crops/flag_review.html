@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Flag Review - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="bi bi-flag-fill me-2"></i>Flag Inappropriate Review</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Review Info -->
+                    <div class="review-info mb-4 p-3 bg-light rounded">
+                        <h6>{{ review.title }}</h6>
+                        <div class="rating mb-2">
+                            {% for i in "12345"|make_list %}
+                                <i class="bi bi-star{% if forloop.counter <= review.rating %}-fill{% endif %} text-warning"></i>
+                            {% endfor %}
+                        </div>
+                        <p class="mb-1">{{ review.comment }}</p>
+                        <small class="text-muted">By {{ review.buyer.username }} on {{ review.created_at|date:"M d, Y" }}</small>
+                    </div>
+
+                    <p class="text-muted mb-3">
+                        If you believe this review contains inappropriate content, spam, or violates our community guidelines, please flag it for review.
+                    </p>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Reason for flagging</label>
+                            <select name="reason" id="reason" class="form-select" required>
+                                <option value="">Select a reason</option>
+                                <option value="Inappropriate content">Inappropriate content</option>
+                                <option value="Spam or fake review">Spam or fake review</option>
+                                <option value="Harassment or threats">Harassment or threats</option>
+                                <option value="Offensive language">Offensive language</option>
+                                <option value="False information">False information</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="javascript:history.back()" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-warning">Flag Review</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-submit on reason selection for better UX
+document.getElementById('reason').addEventListener('change', function() {
+    if (this.value) {
+        // Optional: Could add confirmation dialog here
+    }
+});
+</script>
+{% endblock %}

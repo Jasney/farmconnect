@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Farmer Rankings{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Top Farmers</h1>
+        
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="px-6 py-4 bg-green-600 text-white">
+                <h2 class="text-xl font-semibold">Farmer Leaderboard</h2>
+                <p class="text-green-100">Ranked by ratings, transactions, and reviews</p>
+            </div>
+            
+            <div class="divide-y divide-gray-200">
+                {% for farmer_profile in farmers %}
+                <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <span class="text-green-600 font-bold text-lg">
+                                        #{{ forloop.counter }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex-shrink-0">
+                                {% if farmer_profile.farm_image %}
+                                    <img class="w-16 h-16 rounded-lg object-cover" 
+                                         src="{{ farmer_profile.farm_image.url }}" 
+                                         alt="{{ farmer_profile.farm_name }}">
+                                {% else %}
+                                    <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-tractor text-gray-400 text-2xl"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-medium text-gray-900">
+                                    <a href="{% url 'farmer_reviews' farmer_profile.user.id %}" 
+                                       class="hover:text-green-600">
+                                        {{ farmer_profile.user.get_full_name|default:farmer_profile.user.username }}
+                                    </a>
+                                </h3>
+                                <p class="text-sm text-gray-500">
+                                    {{ farmer_profile.farm_name|default:"Farm" }}
+                                </p>
+                                <p class="text-sm text-gray-500">
+                                    {{ farmer_profile.user.location|default:"Location not specified" }}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-6">
+                            <div class="text-center">
+                                <div class="flex items-center">
+                                    {% for i in "12345"|make_list %}
+                                        <i class="fas fa-star text-yellow-400 {% if forloop.counter > farmer_profile.rating_score %}text-gray-300{% endif %}"></i>
+                                    {% endfor %}
+                                </div>
+                                <p class="text-sm text-gray-600 mt-1">
+                                    {{ farmer_profile.rating_score|floatformat:1 }} stars
+                                </p>
+                            </div>
+                            
+                            <div class="text-center">
+                                <p class="text-2xl font-bold text-green-600">
+                                    {{ farmer_profile.successful_transactions }}
+                                </p>
+                                <p class="text-sm text-gray-600">Transactions</p>
+                            </div>
+                            
+                            <div class="text-center">
+                                <p class="text-2xl font-bold text-blue-600">
+                                    {{ farmer_profile.total_reviews }}
+                                </p>
+                                <p class="text-sm text-gray-600">Reviews</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="px-6 py-8 text-center text-gray-500">
+                    <i class="fas fa-users text-4xl mb-4"></i>
+                    <p>No farmers found.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        {% if is_paginated %}
+        <div class="mt-8 flex justify-center">
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" 
+                       class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        Previous
+                    </a>
+                {% endif %}
+                
+                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                    Page {{ page_obj.number }} of {{ paginator.num_pages }}
+                </span>
+                
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" 
+                       class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        Next
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,228 @@
+
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if crop %}Edit Crop{% else %}Add Crop{% endif %} - Farm Connect{% endblock %}
+
+{% block extra_css %}
+<style>
+    body { background-color: #f8fcf5 !important; background-image: none !important; }
+    
+    .crop-form-container {
+        max-width: 600px;
+        margin: 3rem auto;
+    }
+    
+    .form-header {
+        background: linear-gradient(135deg, #2d8659 0%, #3ead5d 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px 12px 0 0;
+    }
+    
+    .form-body {
+        background: white;
+        padding: 2rem;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #2d8659;
+        margin-bottom: 0.75rem;
+    }
+    
+    .form-control, select {
+        border: 1.5px solid #dee2e6;
+        border-radius: 8px;
+        padding: 0.75rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, select:focus {
+        border-color: #3ead5d;
+        box-shadow: 0 0 0 3px rgba(62, 173, 93, 0.1);
+        outline: none;
+    }
+    
+    .form-help {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.5rem;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #3ead5d 0%, #2d8659 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        flex: 1;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(62, 173, 93, 0.2);
+    }
+    
+    .btn-cancel {
+        background: #e0e0e0;
+        color: #666;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        flex: 1;
+    }
+    
+    .btn-cancel:hover {
+        background: #d0d0d0;
+    }
+    
+    .success-message {
+        padding: 1rem;
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 8px;
+        color: #155724;
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="crop-form-container">
+    <div class="form-header">
+        <h3 class="mb-0">
+            <i class="bi {% if crop %}bi-pencil{% else %}bi-plus-circle{% endif %} me-2"></i>
+            {% if crop %}Edit Crop Listing{% else %}Add New Crop Listing{% endif %}
+        </h3>
+    </div>
+    
+    <div class="form-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Crop Name -->
+            <div class="form-group">
+                <label class="form-label" for="{{ form.name.id_for_label }}">
+                    Crop Name
+                </label>
+                {{ form.name }}
+                <div class="form-help">e.g., "Fresh Tomatoes", "Organic Maize"</div>
+                {% if form.name.errors %}
+                    <div class="text-danger small mt-2">{{ form.name.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Crop Type -->
+            <div class="form-group">
+                <label class="form-label" for="{{ form.type.id_for_label }}">
+                    Crop Type
+                </label>
+                {{ form.type }}
+                {% if form.type.errors %}
+                    <div class="text-danger small mt-2">{{ form.type.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Price -->
+            <div class="form-group">
+                <label class="form-label" for="{{ form.price_per_unit.id_for_label }}">
+                    Price Per Unit (Ksh)
+                </label>
+                {{ form.price_per_unit }}
+                <div class="form-help">Enter your selling price</div>
+                {% if form.price_per_unit.errors %}
+                    <div class="text-danger small mt-2">{{ form.price_per_unit.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Quantity & Unit -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.quantity_available.id_for_label }}">
+                            Quantity Available
+                        </label>
+                        {{ form.quantity_available }}
+                        {% if form.quantity_available.errors %}
+                            <div class="text-danger small mt-2">{{ form.quantity_available.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.unit.id_for_label }}">
+                            Unit
+                        </label>
+                        {{ form.unit }}
+                        <div class="form-help">kg, bags, tons, etc</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label class="form-label" for="{{ form.description.id_for_label }}">
+                    Description
+                </label>
+                {{ form.description }}
+                <div class="form-help">Add details about your crop (quality, harvest date, etc)</div>
+                {% if form.description.errors %}
+                    <div class="text-danger small mt-2">{{ form.description.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Image -->
+            <div class="form-group">
+                <label class="form-label" for="{{ form.image.id_for_label }}">
+                    Crop Photo
+                </label>
+                {{ form.image }}
+                <div class="form-help">Upload a clear photo of your crop (JPG, PNG, Max 5MB)</div>
+                {% if form.image.errors %}
+                    <div class="text-danger small mt-2">{{ form.image.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Buttons -->
+            <div class="btn-group">
+                <button type="submit" class="btn-submit">
+                    <i class="bi {% if crop %}bi-check-circle{% else %}bi-plus-circle{% endif %} me-2"></i>
+                    {% if crop %}Save Changes{% else %}Create Listing{% endif %}
+                </button>
+                <a href="{% url 'my_listings' %}" class="btn-cancel" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-x-circle me-2"></i>Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Add Bootstrap classes
+    document.querySelectorAll('.form-control, select, textarea').forEach(el => {
+        if (!el.classList.contains('form-control')) {
+            el.classList.add('form-control');
+        }
+    });
+</script>
+{% endblock %}
+
+

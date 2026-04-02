@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Purchase Requests - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Purchase Requests</h2>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Crop</th>
+                    <th>Buyer</th>
+                    <th>Farmer</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th>Requested On</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in purchase_requests %}
+                <tr>
+                    <td><a href="{% url 'crop_detail' req.crop.id %}">{{ req.crop.name }}</a></td>
+                    <td>{{ req.buyer.get_full_name|default:req.buyer.username }}</td>
+                    <td>{{ req.crop.farmer.get_full_name|default:req.crop.farmer.username }}</td>
+                    <td>{{ req.quantity_requested }} {{ req.crop.unit }}</td>
+                    <td>{{ req.get_status_display }}</td>
+                    <td>{{ req.created_at|date:'M d, Y H:i' }}</td>
+                    <td>
+                        {% if user.role == 'farmer' and req.status == 'pending' %}
+                            <a class="btn btn-sm btn-success" href="{% url 'update_purchase_request' req.id %}?action=accepted">Accept</a>
+                            <a class="btn btn-sm btn-danger" href="{% url 'update_purchase_request' req.id %}?action=declined">Decline</a>
+                        {% elif user.role == 'buyer' %}
+                            <span>&mdash;</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">No purchase requests found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

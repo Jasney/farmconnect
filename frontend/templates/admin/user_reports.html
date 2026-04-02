@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}User Reports - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="text-success">
+                <i class="bi bi-flag-fill me-2"></i>
+                User Reports
+            </h1>
+            <p class="text-muted">Manage and review user-submitted reports</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'admin_panel:dashboard' %}" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="glass-card text-center py-3">
+                <div class="h4 mb-0 text-danger">{{ total_pending }}</div>
+                <small class="text-muted">Pending Reports</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="glass-card text-center py-3">
+                <div class="h4 mb-0 text-success">{{ reports|length }}</div>
+                <small class="text-muted">Total Reports</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="glass-card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="">All Status</option>
+                                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="resolved" {% if status_filter == 'resolved' %}selected{% endif %}>Resolved</option>
+                                <option value="dismissed" {% if status_filter == 'dismissed' %}selected{% endif %}>Dismissed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Severity</label>
+                            <select name="severity" class="form-select">
+                                <option value="">All Severities</option>
+                                <option value="low" {% if severity_filter == 'low' %}selected{% endif %}>Low</option>
+                                <option value="medium" {% if severity_filter == 'medium' %}selected{% endif %}>Medium</option>
+                                <option value="high" {% if severity_filter == 'high' %}selected{% endif %}>High</option>
+                                <option value="critical" {% if severity_filter == 'critical' %}selected{% endif %}>Critical</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-filter"></i> Filter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="glass-card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Report ID</th>
+                                    <th>Reported User</th>
+                                    <th>Reporter</th>
+                                    <th>Severity</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for report in reports %}
+                                <tr>
+                                    <td>
+                                        <strong>#{{ report.id }}</strong>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold">{{ report.reported_user.get_full_name|default:report.reported_user.username }}</div>
+                                        <small class="text-muted">{{ report.reported_user.email }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold">{{ report.reporter.get_full_name|default:report.reporter.username }}</div>
+                                        <small class="text-muted">{{ report.reporter.email }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{% if report.severity == 'low' %}secondary{% elif report.severity == 'medium' %}warning{% elif report.severity == 'high' %}danger{% else %}dark{% endif %}">
+                                            {{ report.get_severity_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{% if report.status == 'pending' %}warning{% elif report.status == 'resolved' %}success{% else %}secondary{% endif %}">
+                                            {{ report.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ report.created_at|date:"M d, Y H:i" }}</td>
+                                    <td>
+                                        <a href="{% url 'admin_panel:report_detail' report.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        <i class="bi bi-flag display-4"></i>
+                                        <p class="mt-2">No reports found</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %}

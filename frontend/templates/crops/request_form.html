@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Send Purchase Request - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Request Purchase for {{ crop.name }}</h2>
+    <p>Farmer: {{ crop.farmer.get_full_name|default:crop.farmer.username }} | Available: {{ crop.quantity_available }} {{ crop.unit }}</p>
+
+    <div class="card p-3 shadow-sm">
+        <form method="post">{% csrf_token %}
+            {{ form|crispy }}
+            <button class="btn btn-success">Send Request</button>
+            <a href="{% url 'crop_detail' crop.id %}" class="btn btn-outline-secondary ms-2">Back to Crop</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

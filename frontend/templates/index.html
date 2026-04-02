@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Farm Connect - Home{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="glass-dark text-center">
+                <h1>Welcome to Farm Connect</h1>
+                <p>This is the home page. Visit <a href="{% url 'landing' %}" class="btn btn-success btn-sm">Landing Page</a> or <a href="{% url 'accounts:dashboard' %}" class="btn btn-success btn-sm">Dashboard</a>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

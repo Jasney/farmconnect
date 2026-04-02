@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}Report Details - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="text-success">
+                <i class="bi bi-flag-fill me-2"></i>
+                Report #{{ report.id }}
+            </h1>
+            <p class="text-muted">Review and handle user report</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'admin_panel:user_reports' %}" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-arrow-left"></i> Back to Reports
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Report Details -->
+        <div class="col-lg-8 mb-4">
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Report Details</h5>
+                        <span class="badge bg-{% if report.severity == 'low' %}secondary{% elif report.severity == 'medium' %}warning{% elif report.severity == 'high' %}danger{% else %}dark{% endif %}">
+                            {{ report.get_severity_display }} Priority
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Reported User</h6>
+                            <div class="d-flex align-items-center">
+                                {% if report.reported_user.profile_image %}
+                                    <img src="{{ report.reported_user.profile_image.url }}" class="rounded-circle me-3" width="50" height="50" alt="Profile">
+                                {% else %}
+                                    <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="bi bi-person-fill text-white"></i>
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <div class="fw-bold">{{ report.reported_user.get_full_name|default:report.reported_user.username }}</div>
+                                    <small class="text-muted">{{ report.reported_user.email }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Reporter</h6>
+                            <div class="d-flex align-items-center">
+                                {% if report.reporter.profile_image %}
+                                    <img src="{{ report.reporter.profile_image.url }}" class="rounded-circle me-3" width="50" height="50" alt="Profile">
+                                {% else %}
+                                    <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="bi bi-person-fill text-white"></i>
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <div class="fw-bold">{{ report.reporter.get_full_name|default:report.reporter.username }}</div>
+                                    <small class="text-muted">{{ report.reporter.email }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6>Report Description</h6>
+                        <div class="border rounded p-3 bg-light">
+                            {{ report.description }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Status</h6>
+                            <span class="badge bg-{% if report.status == 'pending' %}warning{% elif report.status == 'resolved' %}success{% else %}secondary{% endif %} fs-6">
+                                {{ report.status|title }}
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Created</h6>
+                            <small class="text-muted">{{ report.created_at|date:"F d, Y H:i" }}</small>
+                        </div>
+                    </div>
+
+                    {% if report.admin_notes %}
+                    <div class="mt-3">
+                        <h6>Admin Notes</h6>
+                        <div class="border rounded p-3 bg-info bg-opacity-10">
+                            {{ report.admin_notes }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Panel -->
+        <div class="col-lg-4">
+            {% if report.status == 'pending' %}
+            <div class="glass-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Take Action</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Action</label>
+                            <select name="action" class="form-select" required>
+                                <option value="approve">Resolve Report</option>
+                                <option value="dismiss">Dismiss Report</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="user_action_div" style="display: none;">
+                            <label class="form-label">User Action (if resolving)</label>
+                            <select name="user_action" class="form-select">
+                                <option value="">No action</option>
+                                <option value="suspend">Suspend user account</option>
+                                <option value="block">Block user account</option>
+                                <option value="warn">Send warning (no action)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="admin_notes" class="form-label">Admin Notes</label>
+                            <textarea name="admin_notes" id="admin_notes" class="form-control" rows="3" placeholder="Add notes about this decision..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle"></i> Submit Decision
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="glass-card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Report Resolved</h5>
+                </div>
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle-fill text-success display-4 mb-3"></i>
+                    <p>This report has been {{ report.status }}.</p>
+                    {% if report.reviewed_by %}
+                    <small class="text-muted">
+                        Reviewed by {{ report.reviewed_by.get_full_name|default:report.reviewed_by.username }} on {{ report.reviewed_at|date:"F d, Y H:i" }}
+                    </small>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelector('select[name="action"]').addEventListener('change', function() {
+    const userActionDiv = document.getElementById('user_action_div');
+    if (this.value === 'approve') {
+        userActionDiv.style.display = 'block';
+    } else {
+        userActionDiv.style.display = 'none';
+    }
+});
+</script>
+
+<style>
+.glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %}

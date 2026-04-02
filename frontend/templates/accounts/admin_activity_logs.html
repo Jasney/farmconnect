@@ -1,0 +1,33 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Activity Logs - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="text-success"><i class="bi bi-journal-check me-2"></i>Activity Logs</h2>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% if logs %}
+            <ul class="list-group">
+            {% for log in logs %}
+                <li class="list-group-item">
+                    <strong>{{ log.timestamp }}</strong>: {{ log.action }}
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty-state">
+                <i class="bi bi-clock-history"></i>
+                <h5>No logs yet</h5>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+

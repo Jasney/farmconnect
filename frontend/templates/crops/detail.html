@@ -1,0 +1,48 @@
+
+{% extends 'base.html' %}
+
+{% block title %}{{ crop.name }} - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            {% if crop.image %}
+            <img src="{{ crop.image.url }}" class="card-img-top img-fluid" alt="{{ crop.name }}">
+            {% endif %}
+            <div class="card-body">
+                <h2>{{ crop.name }}</h2>
+                <p class="text-muted">{{ crop.get_type_display }} • {{ crop.farmer.location }}</p>
+                <p>{{ crop.description }}</p>
+                <h4 class="text-success">Ksh {{ crop.price }} / {{ crop.unit }}</h4>
+                <p><strong>Farmer:</strong> {{ crop.farmer.username }} {% if crop.farmer.farmer_verification_status == 'verified' %}<span class="badge bg-success">Verified</span>{% endif %}</p>
+                <p><strong>Farmer Trust Score:</strong> {{ farmer_trust_score|default:'N/A' }} / 5</p>
+                <p><strong>Risk Level:</strong> <span class="badge {% if farmer_risk_level == 'risky' %}bg-danger{% elif farmer_risk_level == 'moderate' %}bg-warning text-dark{% else %}bg-success{% endif %}">{{ farmer_risk_level|capfirst }}</span></p>
+                <p><strong>Updated:</strong> {{ crop.updated_at|date:"M d, Y" }}</p>
+                {% if user.is_authenticated and user != crop.farmer %}
+                <div class="d-flex gap-2">
+                    <a href="{% url 'messages:start_conversation' crop.farmer.id %}" class="btn btn-outline-success">Contact Farmer</a>
+                    {% if user.role == 'buyer' %}
+                        <a href="{% url 'send_purchase_request' crop.id %}" class="btn btn-success">Request Purchase</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3">
+            <h5>Quick Actions</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><a href="{% url 'crop_list' %}">Back to Listings</a></li>
+                {% if user == crop.farmer or user.is_staff %}
+                <li class="list-group-item"><a href="{% url 'crop_edit' crop.id %}">Edit Listing</a></li>
+                <li class="list-group-item"><a href="{% url 'crop_delete' crop.id %}" class="text-danger">Delete Listing</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

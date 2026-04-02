@@ -1,0 +1,47 @@
+
+{% extends 'base.html' %}
+
+{% block title %}My Listings - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="text-success"><i class="bi bi-list-task me-2"></i>My Crop Listings</h2>
+    </div>
+    <div class="col-auto">
+        <a href="{% url 'crop_create' %}" class="btn btn-success">+ Add Crop</a>
+    </div>
+</div>
+
+{% if crops %}
+<div class="row g-4">
+    {% for crop in crops %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm">
+                {% if crop.image %}
+                <img src="{{ crop.image.url }}" class="card-img-top" alt="{{ crop.name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5>{{ crop.name }}</h5>
+                    <p class="text-muted">{{ crop.crop_type }} at Ksh {{ crop.price }}</p>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'crop_detail' crop.id %}" class="btn btn-outline-success btn-sm">View</a>
+                        <a href="{% url 'crop_edit' crop.id %}" class="btn btn-success btn-sm">Edit</a>
+                        <a href="{% url 'crop_delete' crop.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="bi bi-clipboard-data"></i>
+    <h5>No listings yet</h5>
+    <p>List your first crop to attract buyers.</p>
+</div>
+{% endif %}
+{% endblock %}
+
+
+

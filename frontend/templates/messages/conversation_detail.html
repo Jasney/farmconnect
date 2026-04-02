@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Conversation - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <!-- Conversations List Sidebar -->
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="bi bi-chat-dots me-2"></i>Conversations</h6>
+                </div>
+                <div class="card-body p-0" style="max-height: 600px; overflow-y: auto;">
+                    {% if user.conversations.all %}
+                        <div class="list-group list-group-flush">
+                            {% for conv in user.conversations.all %}
+                                <a href="{% url 'messages:conversation_detail' conv.id %}" class="list-group-item list-group-item-action {% if conv.id == conversation.id %}active{% endif %}">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <div class="conversation-info">
+                                            <h6 class="mb-1">
+                                                {% for participant in conv.participants.all %}
+                                                    {% if participant != user %}
+                                                        {{ participant.get_full_name|default:participant.username }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </h6>
+                                            <p class="mb-1 text-muted small">
+                                                {% with conv.messages.last as last_msg %}
+                                                    {% if last_msg %}
+                                                        {% if last_msg.sender == user %}You: {% endif %}{{ last_msg.content|truncatechars:25 }}
+                                                    {% else %}
+                                                        No messages
+                                                    {% endif %}
+                                                {% endwith %}
+                                            </p>
+                                        </div>
+                                        <div class="conversation-meta text-end">
+                                            <small class="text-muted d-block">{{ conv.updated_at|date:"M d" }}</small>
+                                            {% with conv.messages.filter(is_read=False).exclude(sender=user).count as unread %}
+                                                {% if unread %}
+                                                    <span class="badge bg-danger rounded-pill">{{ unread }}</span>
+                                                {% endif %}
+                                            {% endwith %}
+                                        </div>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-3">
+                            <p class="text-muted small">No conversations</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <!-- Chat Area -->
+            <div class="card shadow">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        {% for participant in conversation.participants.all %}
+                            {% if participant != user %}
+                                <i class="bi bi-person-circle me-2"></i>{{ participant.get_full_name|default:participant.username }}
+                            {% endif %}
+                        {% endfor %}
+                    </h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-light" onclick="toggleBlockConversation()">
+                            <i class="bi bi-shield-x me-1"></i>Block
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages Container -->
+                <div class="card-body messages-container" id="messagesContainer" style="height: 400px; overflow-y: auto; padding: 1rem;">
+                    {% for message in conversation.messages.all %}
+                        <div class="message-item mb-3 {% if message.sender == user %}sent{% else %}received{% endif %}">
+                            <div class="message-content">
+                                {% if message.attachments.exists %}
+                                    {% for attachment in message.attachments.all %}
+                                        {% if attachment.file_type == 'image' %}
+                                            <img src="{{ attachment.file.url }}" alt="{{ attachment.file_name }}" class="img-fluid rounded mb-2" style="max-width: 200px;">
+                                        {% else %}
+                                            <a href="{{ attachment.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-paperclip me-1"></i>{{ attachment.file_name }}
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                <p class="mb-1">{{ message.content }}</p>
+                                <small class="text-muted">
+                                    {{ message.timestamp|date:"M d, H:i" }}
+                                    {% if message.is_edited %}<em>(edited)</em>{% endif %}
+                                    {% if message.sender == user %}
+                                        {% if message.is_read %}
+                                            <i class="bi bi-check2-all text-success ms-1"></i>
+                                        {% else %}
+                                            <i class="bi bi-check2 ms-1"></i>
+                                        {% endif %}
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-chat-square-text text-muted" style="font-size: 2rem;"></i>
+                            <p class="text-muted mt-2">No messages yet. Start the conversation!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Message Form -->
+                <div class="card-footer bg-light">
+                    <form method="post" enctype="multipart/form-data" id="messageForm">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" name="content" class="form-control" placeholder="Type your message..." required>
+                            <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('fileInput').click()">
+                                <i class="bi bi-paperclip"></i>
+                            </button>
+                            <input type="file" id="fileInput" name="attachment" style="display: none;" multiple>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-send-fill"></i>
+                            </button>
+                        </div>
+                        <div id="filePreview" class="mt-2"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.messages-container {
+    background-color: #f8f9fa;
+}
+
+.message-item {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.message-item.sent {
+    justify-content: flex-end;
+}
+
+.message-item.received {
+    justify-content: flex-start;
+}
+
+.message-content {
+    max-width: 70%;
+    padding: 0.75rem;
+    border-radius: 1rem;
+    position: relative;
+}
+
+.message-item.sent .message-content {
+    background-color: #007bff;
+    color: white;
+    border-bottom-right-radius: 0.25rem;
+}
+
+.message-item.received .message-content {
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-bottom-left-radius: 0.25rem;
+}
+
+.message-content small {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.list-group-item.active {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const messagesContainer = document.getElementById('messagesContainer');
+    const messageForm = document.getElementById('messageForm');
+    const fileInput = document.getElementById('fileInput');
+    const filePreview = document.getElementById('filePreview');
+
+    // Auto scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    // File preview
+    fileInput.addEventListener('change', function(e) {
+        filePreview.innerHTML = '';
+        if (this.files.length > 0) {
+            for (let file of this.files) {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'badge bg-secondary me-1';
+                fileItem.textContent = file.name;
+                filePreview.appendChild(fileItem);
+            }
+        }
+    });
+
+    // Form submission
+    messageForm.addEventListener('submit', function(e) {
+        // Could add AJAX submission here for real-time messaging
+        setTimeout(() => {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 100);
+    });
+});
+
+function toggleBlockConversation() {
+    if (confirm('Are you sure you want to block this conversation?')) {
+        // Implement block functionality
+        alert('Block functionality would be implemented here');
+    }
+}
+</script>
+{% endblock %}

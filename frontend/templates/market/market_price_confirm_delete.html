@@ -1,0 +1,27 @@
+
+
+{% extends 'base.html' %}
+
+{% block title %}Delete Market Price - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white">
+                <h4>Confirm Delete</h4>
+            </div>
+            <div class="card-body">
+                <p>Are you sure you want to delete market price for <strong>{{ market_price.crop_name }}</strong> in <strong>{{ market_price.location }}</strong>?</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-danger">Confirm Delete</button>
+                    <a href="{% url 'market_prices' %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

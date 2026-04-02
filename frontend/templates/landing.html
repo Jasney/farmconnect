@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Farm Connect - Modern Agriculture Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/landing.css' %}">
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero" id="home">
+    <div class="hero-inner">
+        <div class="text-container">
+            <span class="text-label">Connecting Farmers & Buyers</span>
+            <h1>Grow Your Market with Farm Connect</h1>
+            <p>A premium agricultural marketplace for transparent KES pricing and instant farmer-buyer networking. List products, contact buyers, and move product fast.</p>
+            <div class="mt-4 d-flex gap-2 flex-wrap justify-content-center">
+                {% if not user.is_authenticated %}
+                    <a class="btn btn-primary btn-lg" href="{% url 'accounts:register' %}">Get Started</a>
+                    <a class="btn btn-secondary btn-lg" href="#about">Learn More</a>
+                {% else %}
+                    <a class="btn btn-primary btn-lg" href="{% url 'accounts:dashboard' %}">Go to Dashboard</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Benefits Section -->
+<section class="benefits-section py-5">
+    <div class="container">
+        <div class="benefits-box">
+            <h3><i class="bi bi-lightning-fill me-2"></i>Why Farm Connect?</h3>
+            <ul>
+                <li><strong>✅ Direct Access</strong> - Farmers list directly, buyers purchase directly</li>
+                <li><strong>✅ Fair Pricing</strong> - Transparent KES pricing with no hidden fees</li>
+                <li><strong>✅ Instant Networking</strong> - Connect with buyers and sellers instantly</li>
+                <li><strong>✅ Fast Transactions</strong> - Move products quickly</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Features Grid -->
+<section class="features-section py-5" id="about">
+    <div class="container">
+        <div class="features-header">
+            <h2>Our Core Features</h2>
+            <p>Everything you need to succeed in the agricultural marketplace</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 col-lg-3">
+                <div class="green-feature-box">
+                    <div class="icon"><i class="bi bi-shield-check"></i></div>
+                    <h4>Security First</h4>
+                    <p>Your data is protected with enterprise-grade security and role-based access control.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="green-feature-box">
+                    <div class="icon"><i class="bi bi-speedometer2"></i></div>
+                    <h4>Fast & Reliable</h4>
+                    <p>Optimized for mobile and works great on 2G networks. Built for field use.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="green-feature-box">
+                    <div class="icon"><i class="bi bi-question-circle"></i></div>
+                    <h4>Simple to Use</h4>
+                    <p>Intuitive interface designed for farmers and buyers. Get started in minutes.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="green-feature-box">
+                    <div class="icon"><i class="bi bi-chat-dots"></i></div>
+                    <h4>Direct Messaging</h4>
+                    <p>Chat instantly with buyers or farmers. Negotiate and arrange delivery.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-wrapper py-5">
+    <div class="container">
+        <div class="cta-section">
+            <h2>Ready to Get Started?</h2>
+            <p>Join thousands of farmers and buyers transforming agriculture in Kenya. Start connecting today.</p>
+            <div class="mt-4">
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg fw-bold">
+                        <i class="bi bi-pencil-square me-2"></i>Sign Up Now
+                    </a>
+                {% else %}
+                    <a href="{% url 'accounts:dashboard' %}" class="btn btn-light btn-lg fw-bold">
+                        <i class="bi bi-house-door me-2"></i>Go to Dashboard
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/landing.js' %}"></script>
+{% endblock %}

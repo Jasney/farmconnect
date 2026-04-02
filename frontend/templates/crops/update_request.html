@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Purchase Request - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Review Request for {{ purchase_request.crop.name }}</h2>
+    <p>Buyer: {{ purchase_request.buyer.get_full_name|default:purchase_request.buyer.username }}</p>
+    <p>Qty: {{ purchase_request.quantity_requested }} {{ purchase_request.crop.unit }}</p>
+    <p>Status: <strong>{{ purchase_request.get_status_display }}</strong></p>
+    <p>Message: {{ purchase_request.message|default:'No message provided' }}</p>
+
+    <form method="post">{% csrf_token %}
+        <div class="btn-group" role="group">
+            <button type="submit" name="action" value="accepted" class="btn btn-success" {% if purchase_request.status != 'pending' %}disabled{% endif %}>Accept</button>
+            <button type="submit" name="action" value="declined" class="btn btn-danger" {% if purchase_request.status != 'pending' %}disabled{% endif %}>Decline</button>
+            <a href="{% url 'request_list' %}" class="btn btn-secondary">Back</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

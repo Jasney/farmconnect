@@ -1,0 +1,104 @@
+/* Agricultural Theme - Green, Earthy Tones */
+:root {
+  --primary-green: #28a745;
+  --secondary-green: #20c997;
+  --lime-green: #7dd33f;
+  --earth-brown: #8B4513;
+  --light-green: #d4edda;
+  --dark-green: #0f4d2e;
+  --card-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+  --gradient: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+}
+
+.card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+.btn-primary {
+  background: var(--gradient);
+  border: none;
+  border-radius: 25px;
+  padding: 0.5rem 2rem;
+  font-weight: 500;
+}
+
+.btn-success {
+  background: var(--gradient);
+  border: none;
+}
+
+.hero-section {
+  background: var(--gradient);
+  color: white;
+  padding: 100px 0;
+  text-align: center;
+}
+
+.feature-card {
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  text-align: center;
+  height: 100%;
+}
+
+.crop-card img {
+  height: 200px;
+  object-fit: cover;
+  border-radius: 15px 15px 0 0;
+}
+
+.listing-table {
+  box-shadow: var(--card-shadow);
+}
+
+.table th {
+  background: var(--primary-green);
+  color: white;
+}
+
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid var(--primary-green);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 60px 0;
+  }
+  .card-body {
+    padding: 1rem;
+  }
+}
+
+/* Empty states */
+
+/* Messages/Inbox Styles */
