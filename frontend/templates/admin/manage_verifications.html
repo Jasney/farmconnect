@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
 {% block title %}Manage Verifications - Admin Dashboard{% endblock %}
 
@@ -54,6 +54,7 @@
                                     <th>National ID</th>
                                     <th>Phone</th>
                                     <th>Location</th>
+                                    <th>Submitted Docs</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -66,7 +67,7 @@
                                             {% if farmer.profile_image %}
                                                 <img src="{{ farmer.profile_image.url }}" class="rounded-circle me-3" width="40" height="40" alt="Profile">
                                             {% else %}
-                                                <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center avatar-shell avatar-40">
                                                     <i class="bi bi-person-fill text-white"></i>
                                                 </div>
                                             {% endif %}
@@ -80,13 +81,27 @@
                                     <td>{{ farmer.phone|default:"Not provided" }}</td>
                                     <td>{{ farmer.location|default:"Not provided" }}</td>
                                     <td>
+                                        {% if farmer.verification_documents.exists %}
+                                            {% for doc in farmer.verification_documents.all %}
+                                                <a href="{{ doc.document_file.url }}" target="_blank" class="badge bg-secondary text-decoration-none">
+                                                    {{ doc.get_document_type_display }}
+                                                </a>{% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="text-muted">No documents</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
                                         <span class="badge bg-{% if farmer.farmer_verification_status == 'pending' %}warning{% elif farmer.farmer_verification_status == 'under_review' %}info{% elif farmer.farmer_verification_status == 'verified' %}success{% else %}danger{% endif %}">
                                             {{ farmer.get_farmer_verification_status_display }}
                                         </span>
                                     </td>
                                     <td>
-                                        {% if farmer.farmer_verification_status in 'pending,under_review' %}
+                                        {% if farmer.is_pending_verification %}
                                         <div class="btn-group" role="group">
+                                            <a href="{% url 'admin_panel:verification_detail' farmer.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-info-circle"></i> Details
+                                            </a>
                                             <button class="btn btn-sm btn-success" onclick="approveVerification({{ farmer.id }})">
                                                 <i class="bi bi-check-circle"></i> Approve
                                             </button>
@@ -153,38 +168,34 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                <a id="rejectLink" href="#" class="btn btn-danger">Reject</a>
+                <button type="button" class="btn btn-danger" onclick="confirmReject()">Reject</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+const approveUrlTemplate = "{% url 'admin_panel:approve_verification' 0 %}";
+const rejectUrlTemplate = "{% url 'admin_panel:reject_verification' 0 %}";
+
 function approveVerification(userId) {
-    document.getElementById('approveLink').href = `/admin/verifications/${userId}/approve/`;
+    document.getElementById('approveLink').href = approveUrlTemplate.replace('/0/', `/${userId}/`);
     new bootstrap.Modal(document.getElementById('approvalModal')).show();
 }
 
 function rejectVerification(userId) {
-    document.getElementById('rejectLink').href = `/admin/verifications/${userId}/reject/`;
+    document.getElementById('rejectLink').href = rejectUrlTemplate.replace('/0/', `/${userId}/`);
+    document.getElementById('rejectionReason').value = '';
     new bootstrap.Modal(document.getElementById('rejectionModal')).show();
 }
 
 function confirmReject() {
-    const reason = document.getElementById('rejectionReason').value;
-    const link = document.getElementById('rejectLink').href;
-    // For now, just redirect. In a full implementation, you'd POST the reason
+    const reason = document.getElementById('rejectionReason').value.trim();
+    let link = document.getElementById('rejectLink').href;
+    if (reason) {
+        link += `?reason=${encodeURIComponent(reason)}`;
+    }
     window.location.href = link;
 }
 </script>
-
-<style>
-.glass-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-</style>
 {% endblock %}

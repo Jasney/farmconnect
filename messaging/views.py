@@ -23,12 +23,7 @@ def conversations_list(request):
         messages.error(request, 'Only verified farmers can access messaging. Complete verification to use this feature.')
         return redirect('accounts:dashboard')
     
-    conversations = request.user.conversations.annotate(
-        unread_count=Count(
-            'messages',
-            filter=Q(messages__is_read=False) & ~Q(messages__sender=request.user)
-        )
-    ).order_by('-updated_at')
+    conversations = Conversation.objects.with_unread_count(request.user).order_by('-updated_at')
     
     context = {
         'conversations': conversations
@@ -50,7 +45,10 @@ def conversation_detail(request, conversation_id):
         messages.error(request, 'You do not have access to this conversation.')
         return redirect('messages:conversations_list')
     
-    # Mark all unread messages as read
+    # Build conversation list with unread counters for sidebar display
+    conversations = Conversation.objects.with_unread_count(request.user).order_by('-updated_at')
+    
+    # Mark all unread messages in this conversation as read
     unread_messages = conversation.messages.filter(is_read=False).exclude(sender=request.user)
     for msg in unread_messages:
         msg.mark_as_read()
@@ -89,6 +87,7 @@ def conversation_detail(request, conversation_id):
         'messages': messages_list,
         'form': form,
         'other_user': conversation.get_other_user(request.user),
+        'conversations': conversations,
     }
     
     return render(request, 'messages/conversation_detail.html', context)

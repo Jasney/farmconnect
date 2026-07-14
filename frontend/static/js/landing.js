@@ -1,24 +1,43 @@
-function openVideo() {
-    alert('Demo video modal can be implemented here.');
-}
+document.addEventListener('DOMContentLoaded', () => {
+    const revealItems = document.querySelectorAll('.reveal-on-scroll');
 
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-        }
-    });
-}, { threshold: 0.15 });
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) {
+                    return;
+                }
 
-document.querySelectorAll('.trust-section, .stats-section, .video-section, .services-section, .faq-section, .testimonials-section, .cta-last').forEach(el => observer.observe(el));
+                entry.target.classList.add('is-visible');
+                obs.unobserve(entry.target);
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: '0px 0px -40px 0px'
+        });
 
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        const target = this.getAttribute('href');
-        if (target.length > 1) {
-            e.preventDefault();
-            document.querySelector(target)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        revealItems.forEach((item) => observer.observe(item));
+    } else {
+        revealItems.forEach((item) => item.classList.add('is-visible'));
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener('click', (event) => {
+            const target = anchor.getAttribute('href');
+            if (!target || target.length <= 1) {
+                return;
+            }
+
+            const destination = document.querySelector(target);
+            if (!destination) {
+                return;
+            }
+
+            event.preventDefault();
+            destination.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        });
     });
 });

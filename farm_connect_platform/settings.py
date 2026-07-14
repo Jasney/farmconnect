@@ -25,7 +25,7 @@ def parse_bool_env(name, default=False):
 
 DEBUG = parse_bool_env('DEBUG', False)
 
-ALLOWED_HOSTS = [h.strip() for h in config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',') if h.strip()]
+ALLOWED_HOSTS = [h.strip() for h in config('ALLOWED_HOSTS', default='localhost,127.0.0.1,testserver').split(',') if h.strip()]
 PA_HOST = config('PYTHONANYWHERE_HOST', default='')
 if PA_HOST:
     ALLOWED_HOSTS.append(PA_HOST)

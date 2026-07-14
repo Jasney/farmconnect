@@ -27,6 +27,19 @@ class RegisterForm(UserCreationForm):
                 existing_classes = field.widget.attrs.get('class', '')
                 field.widget.attrs['class'] = (existing_classes + ' form-control').strip()
 
+        self.fields['username'].widget.attrs.setdefault('placeholder', 'Choose a username')
+        self.fields['email'].widget.attrs.setdefault('placeholder', 'Email address')
+        self.fields['password1'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Create password',
+            'autocomplete': 'new-password',
+        })
+        self.fields['password2'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Confirm password',
+            'autocomplete': 'new-password',
+        })
+
 
 class FarmerProfileForm(forms.ModelForm):
     farm_name = forms.CharField(

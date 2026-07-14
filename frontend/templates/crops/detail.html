@@ -1,48 +1,141 @@
-
 {% extends 'base.html' %}
 
 {% block title %}{{ crop.name }} - Farm Connect{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <div class="card shadow-sm">
+<div class="row g-4">
+    <div class="col-lg-8">
+        <section class="admin-panel crop-detail-panel">
             {% if crop.image %}
-            <img src="{{ crop.image.url }}" class="card-img-top img-fluid" alt="{{ crop.name }}">
+                <img src="{{ crop.image.url }}" class="card-img-top img-fluid crop-detail-image" alt="{{ crop.name }}">
             {% endif %}
-            <div class="card-body">
-                <h2>{{ crop.name }}</h2>
-                <p class="text-muted">{{ crop.get_type_display }} • {{ crop.farmer.location }}</p>
-                <p>{{ crop.description }}</p>
-                <h4 class="text-success">Ksh {{ crop.price }} / {{ crop.unit }}</h4>
-                <p><strong>Farmer:</strong> {{ crop.farmer.username }} {% if crop.farmer.farmer_verification_status == 'verified' %}<span class="badge bg-success">Verified</span>{% endif %}</p>
-                <p><strong>Farmer Trust Score:</strong> {{ farmer_trust_score|default:'N/A' }} / 5</p>
-                <p><strong>Risk Level:</strong> <span class="badge {% if farmer_risk_level == 'risky' %}bg-danger{% elif farmer_risk_level == 'moderate' %}bg-warning text-dark{% else %}bg-success{% endif %}">{{ farmer_risk_level|capfirst }}</span></p>
-                <p><strong>Updated:</strong> {{ crop.updated_at|date:"M d, Y" }}</p>
-                {% if user.is_authenticated and user != crop.farmer %}
-                <div class="d-flex gap-2">
-                    <a href="{% url 'messages:start_conversation' crop.farmer.id %}" class="btn btn-outline-success">Contact Farmer</a>
-                    {% if user.role == 'buyer' %}
-                        <a href="{% url 'send_purchase_request' crop.id %}" class="btn btn-success">Request Purchase</a>
+            <div class="admin-panel-body">
+                <div class="crop-detail-head">
+                    <div>
+                        <div class="crop-detail-tags">
+                            <span class="badge bg-success-subtle text-success-emphasis">{{ crop.get_type_display }}</span>
+                            <span class="badge bg-light text-dark">{{ crop.quality_grade|capfirst }}</span>
+                            {% if crop.is_organic %}
+                                <span class="badge bg-warning text-dark">Organic</span>
+                            {% endif %}
+                        </div>
+                        <h1 class="mb-2">{{ crop.name }}</h1>
+                        <p class="text-muted mb-0">{{ crop.farmer.location|default:"Location not specified" }} • Updated {{ crop.updated_at|date:"M d, Y" }}</p>
+                    </div>
+                    <div class="crop-price-pill">KES {{ crop.price_per_unit }} / {{ crop.unit }}</div>
+                </div>
+
+                <p class="mt-4 mb-4">{{ crop.description|default:"No description has been added for this listing yet." }}</p>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="crop-metric-card">
+                            <div class="crop-metric-label">Available Quantity</div>
+                            <div class="crop-metric-value">{{ crop.quantity_available }} {{ crop.unit }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="crop-metric-card">
+                            <div class="crop-metric-label">Farmer Trust Score</div>
+                            <div class="crop-metric-value">{{ farmer_trust_score|default:"N/A" }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="crop-metric-card">
+                            <div class="crop-metric-label">Risk Level</div>
+                            <div class="crop-metric-value">
+                                <span class="badge {% if farmer_risk_level == 'risky' %}bg-danger{% elif farmer_risk_level == 'moderate' %}bg-warning text-dark{% else %}bg-success{% endif %}">{{ farmer_risk_level|capfirst }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="crop-farmer-line">
+                    <strong>Farmer:</strong> {{ crop.farmer.username }}
+                    {% if crop.farmer.farmer_verification_status == 'verified' %}
+                        <span class="badge bg-success">Verified</span>
                     {% endif %}
                 </div>
+
+                {% if user.is_authenticated and user != crop.farmer %}
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <a href="{% url 'messages:start_conversation' crop.farmer.id %}" class="btn btn-outline-success">Contact Farmer</a>
+                        {% if user.role == 'buyer' %}
+                            <a href="{% url 'send_purchase_request' crop.id %}" class="btn btn-success">Request Purchase</a>
+                        {% endif %}
+                    </div>
                 {% endif %}
             </div>
-        </div>
+        </section>
     </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm p-3">
-            <h5>Quick Actions</h5>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><a href="{% url 'crop_list' %}">Back to Listings</a></li>
-                {% if user == crop.farmer or user.is_staff %}
-                <li class="list-group-item"><a href="{% url 'crop_edit' crop.id %}">Edit Listing</a></li>
-                <li class="list-group-item"><a href="{% url 'crop_delete' crop.id %}" class="text-danger">Delete Listing</a></li>
+    <div class="col-lg-4">
+        <section class="admin-panel mb-4">
+            <div class="admin-panel-header">
+                <h2 class="section-title mb-0">Market Insight</h2>
+            </div>
+            <div class="admin-panel-body">
+                {% if price_insight.available %}
+                    <div class="insight-card-stat">
+                        <span class="insight-card-label">Average</span>
+                        <strong>KES {{ price_insight.average_price|floatformat:2 }}</strong>
+                    </div>
+                    <div class="insight-card-stat">
+                        <span class="insight-card-label">Best Market</span>
+                        <strong>{{ price_insight.highest_market }}</strong>
+                    </div>
+                    <div class="insight-card-stat">
+                        <span class="insight-card-label">Top Price</span>
+                        <strong>KES {{ price_insight.highest_price|floatformat:2 }}</strong>
+                    </div>
+                    {% if price_insight.price_position == 'above' %}
+                        <div class="alert alert-warning mb-0">This listing is above the average market price by KES {{ price_insight.price_gap|floatformat:2 }}.</div>
+                    {% elif price_insight.price_position == 'below' %}
+                        <div class="alert alert-success mb-0">This listing is below the average market price by KES {{ price_insight.price_gap|floatformat:2|cut:"-" }}.</div>
+                    {% else %}
+                        <div class="alert alert-secondary mb-0">This listing is aligned with the average market price.</div>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted mb-0">{{ price_insight.message }}</p>
                 {% endif %}
-            </ul>
-        </div>
+            </div>
+        </section>
+
+        {% if buyer_matches %}
+            <section class="admin-panel mb-4">
+                <div class="admin-panel-header">
+                    <h2 class="section-title mb-0">Buyer Matches</h2>
+                </div>
+                <div class="admin-panel-body">
+                    <div class="admin-list">
+                        {% for match in buyer_matches %}
+                            <div class="admin-list-item admin-list-item--stacked">
+                                <div class="fw-semibold">{{ match.buyer.get_full_name|default:match.buyer.username }}</div>
+                                <div class="small text-muted">{{ match.buyer.location|default:"Location not set" }}</div>
+                                <div class="small">Match score: {{ match.score }}</div>
+                                <div class="small">{{ match.reasons|join:", " }}</div>
+                                <a href="{% url 'messages:start_conversation' match.buyer.id %}" class="btn btn-sm btn-outline-success mt-2">Message Buyer</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+
+        <section class="admin-panel">
+            <div class="admin-panel-header">
+                <h2 class="section-title mb-0">Quick Actions</h2>
+            </div>
+            <div class="admin-panel-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'crop_list' %}" class="btn btn-outline-success">Back to Listings</a>
+                    <a href="{% url 'accounts:ai_assistant' %}" class="btn btn-outline-success">Ask AI Assistant</a>
+                    {% if user == crop.farmer or user.is_staff %}
+                        <a href="{% url 'crop_update' crop.id %}" class="btn btn-outline-secondary">Edit Listing</a>
+                        <a href="{% url 'crop_delete' crop.id %}" class="btn btn-outline-danger">Delete Listing</a>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
     </div>
 </div>
 {% endblock %}
-
-

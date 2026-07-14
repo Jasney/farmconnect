@@ -83,5 +83,9 @@ class ReviewForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['quantity_requested'].widget.attrs.update({'class': 'form-control', 'min': 1})
-        self.fields['message'].widget.attrs.update({'class': 'form-control', 'rows': 4, 'placeholder': 'Optional message to the farmer'})
+        self.fields['title'].widget.attrs.update({'class': 'form-control'})
+        self.fields['comment'].widget.attrs.update({
+            'class': 'form-control',
+            'rows': 5,
+            'placeholder': 'Share your experience with this product and farmer'
+        })

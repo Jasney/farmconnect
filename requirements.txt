@@ -71,9 +71,5 @@ wcwidth==0.6.0
 webencodings==0.5.1
 Werkzeug==3.0.1
 
-<<<<<<< HEAD
 gunicorn==25.3.0
-=======
-gunicorn==20.5.0
->>>>>>> c77ad63eeb6186ecd59f055554ad7e739af37eda
 whitenoise==6.5.0

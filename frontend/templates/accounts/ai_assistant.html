@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Assistant - Farm Connect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-xl-10">
+            <section class="admin-panel ai-assistant-shell">
+                <div class="admin-panel-header">
+                    <div>
+                        <h1 class="section-title mb-1">Farm Connect AI Assistant</h1>
+                        <p class="mb-0 text-muted">Ask about prices, likely buyers, and where to focus next using your marketplace data.</p>
+                    </div>
+                </div>
+                <div class="admin-panel-body">
+                    <form method="post" class="ai-assistant-form">
+                        {% csrf_token %}
+                        <label for="assistant-question" class="form-label">Ask a question</label>
+                        <textarea id="assistant-question" name="question" rows="4" class="form-control" placeholder="Example: Which market is paying the most for maize?">{{ question }}</textarea>
+                        <button type="submit" class="btn btn-success mt-3">Get Answer</button>
+                    </form>
+
+                    <div class="row g-4 mt-1">
+                        <div class="col-lg-8">
+                            <div class="assistant-answer-card">
+                                <div class="assistant-answer-label">{{ assistant_result.title }}</div>
+                                <p class="mb-0">{{ assistant_result.answer }}</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="assistant-prompts-card">
+                                <h2 class="h6 mb-3">Starter Prompts</h2>
+                                <div class="admin-list">
+                                    {% for prompt in starter_prompts %}
+                                        <div class="admin-list-item admin-list-item--stacked">
+                                            <div>{{ prompt }}</div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="assistant-suggestions mt-4">
+                        <h2 class="h6 mb-3">Suggested Next Steps</h2>
+                        <div class="row g-3">
+                            {% for suggestion in assistant_result.suggestions %}
+                                <div class="col-md-4">
+                                    <div class="assistant-suggestion-card">{{ suggestion }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

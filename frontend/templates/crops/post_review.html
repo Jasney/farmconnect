@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}Post Review - Farm Connect{% endblock %}
@@ -57,30 +57,6 @@
         </div>
     </div>
 </div>
-
-<style>
-.rating-stars input[type="radio"] {
-    display: none;
-}
-
-.rating-display .bi-star {
-    color: #ddd;
-    font-size: 1.5rem;
-}
-
-.rating-display .bi-star.active {
-    color: #ffc107;
-}
-
-.rating-stars input[type="radio"]:checked ~ .rating-display .bi-star:nth-child(-n+1),
-.rating-stars input[type="radio"]:checked ~ .rating-display .bi-star:nth-child(-n+2),
-.rating-stars input[type="radio"]:checked ~ .rating-display .bi-star:nth-child(-n+3),
-.rating-stars input[type="radio"]:checked ~ .rating-display .bi-star:nth-child(-n+4),
-.rating-stars input[type="radio"]:checked ~ .rating-display .bi-star:nth-child(-n+5) {
-    color: #ffc107;
-}
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const ratingInputs = document.querySelectorAll('input[name="rating"]');

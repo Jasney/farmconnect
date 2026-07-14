@@ -12,6 +12,7 @@ urlpatterns = [
     path('farmer-rankings/', views.farmer_rankings, name='farmer_rankings'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('profile/', views.profile, name='profile'),
+    path('assistant/', views.ai_assistant, name='ai_assistant'),
     path('admin/users/', views.user_management, name='user_management'),
     path('admin/listings/', views.listing_moderation, name='listing_moderation'),
     path('admin/activity/', views.activity_logs, name='activity_logs'),

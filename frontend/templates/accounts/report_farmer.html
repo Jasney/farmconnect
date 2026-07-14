@@ -18,31 +18,40 @@
 
                 <form method="post">
                     {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="report_type" class="form-label">Report Type</label>
-                        <select class="form-select" id="report_type" name="report_type">
-                            <option value="fraud">Fraudulent Activity</option>
-                            <option value="inappropriate_content">Inappropriate Content</option>
-                            <option value="harassment">Harassment/Abuse</option>
-                            <option value="failed_transaction">Failed Transaction</option>
-                            <option value="non_delivery">Non-Delivery</option>
-                            <option value="quality_issue">Quality Issue</option>
-                            <option value="other" selected>Other</option>
-                        </select>
+                    
+                    <!-- Row 1: Report Type and Title -->
+                    <div class="form-row">
+                        <div class="mb-3">
+                            <label for="report_type" class="form-label">Report Type</label>
+                            <select class="form-select" id="report_type" name="report_type">
+                                <option value="fraud">Fraudulent Activity</option>
+                                <option value="inappropriate_content">Inappropriate Content</option>
+                                <option value="harassment">Harassment/Abuse</option>
+                                <option value="failed_transaction">Failed Transaction</option>
+                                <option value="non_delivery">Non-Delivery</option>
+                                <option value="quality_issue">Quality Issue</option>
+                                <option value="other" selected>Other</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="title" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="title" name="title" required>
-                    </div>
+                    <!-- Row 2: Description and Buttons -->
+                    <div class="form-row">
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required></textarea>
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="5" required></textarea>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger">Submit Report</button>
+                            <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary">Back</a>
+                        </div>
                     </div>
-
-                    <button type="submit" class="btn btn-danger">Submit Report</button>
-                    <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary ms-2">Back</a>
                 </form>
             </div>
         </div>

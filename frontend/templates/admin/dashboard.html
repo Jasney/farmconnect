@@ -1,93 +1,202 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Admin Dashboard - Farm Connect{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <h1>Admin Dashboard</h1>
-    <p>Welcome, {{ user.username }}!</p>
-    
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5>Total Users</h5>
-                    <h3>{{ user_count }}</h3>
-                </div>
+<div class="admin-dashboard-page">
+    <div class="container-fluid py-4">
+        <div class="dashboard-header mb-4">
+            <div>
+                <h1 class="dashboard-title text-success">
+                    <i class="bi bi-shield-check me-2"></i>Admin Dashboard
+                </h1>
+                <p class="dashboard-subtitle">Monitor platform activity, review risk signals, and manage marketplace operations.</p>
+            </div>
+            <div class="dashboard-actions">
+                <a href="{% url 'admin_panel:platform_analytics' %}" class="btn btn-outline-success">
+                    <i class="bi bi-bar-chart-line me-2"></i>Analytics
+                </a>
+                <a href="{% url 'admin_panel:ai_monitoring' %}" class="btn btn-warning">
+                    <i class="bi bi-cpu me-2"></i>AI Monitoring
+                </a>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5>Farmers</h5>
-                    <h3>{{ farmer_count }}</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5>Buyers</h5>
-                    <h3>{{ buyer_count }}</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5>Crops</h5>
-                    <h3>{{ crop_count }}</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="row mt-4">
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5>Pending Reports</h5>
-                    <h3>{{ pending_reports }}</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5>Pending Appeals</h5>
-                    <h3>{{ pending_appeals }}</h3>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row mt-3">
-        <div class="col-md-6">
-            <a href="{% url 'admin_panel:user_reports' %}" class="btn btn-danger w-100 mb-2">Review Reports</a>
-        </div>
-        <div class="col-md-6">
-            <a href="{% url 'admin_panel:account_appeals' %}" class="btn btn-warning w-100 mb-2">Review Appeals</a>
-        </div>
-    </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5>Pending Appeals</h5>
-                    <h3>{{ pending_appeals }}</h3>
+        <div class="row g-4 mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="admin-stat-card">
+                    <div class="card-body">
+                        <div class="admin-stat-label">Total Users</div>
+                        <div class="admin-stat-value">{{ total_users }}</div>
+                        <small class="text-muted">{{ total_farmers }} farmers and {{ total_buyers }} buyers</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="admin-stat-card">
+                    <div class="card-body">
+                        <div class="admin-stat-label">Active Products</div>
+                        <div class="admin-stat-value">{{ total_products }}</div>
+                        <small class="text-muted">{{ total_transactions }} completed transactions recorded</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="admin-stat-card">
+                    <div class="card-body">
+                        <div class="admin-stat-label">Review Queue</div>
+                        <div class="admin-stat-value">{{ pending_reports|add:pending_appeals|add:pending_verifications }}</div>
+                        <small class="text-muted">{{ pending_reports }} reports, {{ pending_appeals }} appeals, {{ pending_verifications }} verifications</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="admin-stat-card">
+                    <div class="card-body">
+                        <div class="admin-stat-label">Risk Signals</div>
+                        <div class="admin-stat-value">{{ flagged_accounts }}</div>
+                        <small class="text-muted">{{ suspended_accounts }} suspended accounts, {{ pending_reviews }} pending reviews</small>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 text-end">
-            <a href="{% url 'admin_panel:ai_monitoring' %}" class="btn btn-warning me-2">
-                <i class="fas fa-brain"></i> AI Monitoring
-            </a>
-            <a href="{% url 'admin_panel:user_management' %}" class="btn btn-primary me-2">Manage Users</a>
-            <a href="{% url 'accounts:listing_moderation' %}" class="btn btn-success me-2">Moderate Listings</a>
-            <a href="{% url 'accounts:activity_logs' %}" class="btn btn-info me-2">Activity Logs</a>
-            <a href="/admin/" class="btn btn-secondary">Django Admin</a>
+
+        <div class="row g-4 mb-4">
+            <div class="col-lg-6">
+                <section class="admin-panel">
+                    <div class="admin-panel-header">
+                        <h2 class="section-title mb-0">Action Center</h2>
+                        <span class="text-muted small">Common moderation tasks in one place</span>
+                    </div>
+                    <div class="admin-panel-body">
+                        <div class="admin-action-grid">
+                            <div class="admin-action-card">
+                                <div>
+                                    <h3 class="h6 mb-2">User Management</h3>
+                                    <p class="text-muted small mb-0">Inspect accounts, review farmer status, and take moderation actions.</p>
+                                </div>
+                                <a href="{% url 'admin_panel:user_management' %}" class="btn btn-outline-success">Manage Users</a>
+                            </div>
+                            <div class="admin-action-card">
+                                <div>
+                                    <h3 class="h6 mb-2">Reports</h3>
+                                    <p class="text-muted small mb-0">Triage submitted abuse and fraud reports from the marketplace.</p>
+                                </div>
+                                <a href="{% url 'admin_panel:user_reports' %}" class="btn btn-outline-danger">Review Reports</a>
+                            </div>
+                            <div class="admin-action-card">
+                                <div>
+                                    <h3 class="h6 mb-2">Appeals</h3>
+                                    <p class="text-muted small mb-0">Process blocked-account appeals and track admin responses.</p>
+                                </div>
+                                <a href="{% url 'admin_panel:account_appeals' %}" class="btn btn-outline-warning">Review Appeals</a>
+                            </div>
+                            <div class="admin-action-card">
+                                <div>
+                                    <h3 class="h6 mb-2">Verifications</h3>
+                                    <p class="text-muted small mb-0">Approve or reject pending farmer verification submissions.</p>
+                                </div>
+                                <a href="{% url 'admin_panel:manage_verifications' %}" class="btn btn-outline-primary">Review Verifications</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-lg-6">
+                <section class="admin-panel">
+                    <div class="admin-panel-header">
+                        <h2 class="section-title mb-0">Platform Snapshot</h2>
+                        <span class="text-muted small">Current operational totals</span>
+                    </div>
+                    <div class="admin-panel-body">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="admin-action-card">
+                                    <strong>Active Farmers</strong>
+                                    <span class="h4 mb-0 text-success">{{ active_farmers }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="admin-action-card">
+                                    <strong>Approved Reviews</strong>
+                                    <span class="h4 mb-0 text-primary">{{ total_reviews }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="admin-action-card">
+                                    <strong>Pending Reports</strong>
+                                    <span class="h4 mb-0 text-danger">{{ pending_reports }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="admin-action-card">
+                                    <strong>Pending Appeals</strong>
+                                    <span class="h4 mb-0 text-warning">{{ pending_appeals }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <section class="admin-panel">
+                    <div class="admin-panel-header">
+                        <h2 class="section-title mb-0">Recent Admin Actions</h2>
+                        <a href="{% url 'admin_panel:activity_logs' %}" class="btn btn-sm btn-outline-secondary">View Logs</a>
+                    </div>
+                    <div class="admin-panel-body">
+                        {% if recent_actions %}
+                            <div class="admin-list">
+                                {% for action in recent_actions %}
+                                    <div class="admin-list-item">
+                                        <div>
+                                            <div class="fw-semibold">{{ action.get_action_type_display|default:action.action_type }}</div>
+                                            <div class="text-muted small">{{ action.description|default:"No description provided." }}</div>
+                                        </div>
+                                        <div class="text-muted small text-nowrap">{{ action.timestamp|date:"M d, H:i" }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">No recent admin actions yet.</p>
+                        {% endif %}
+                    </div>
+                </section>
+            </div>
+            <div class="col-lg-6">
+                <section class="admin-panel">
+                    <div class="admin-panel-header">
+                        <h2 class="section-title mb-0">Recent Reports</h2>
+                        <a href="{% url 'admin_panel:user_reports' %}" class="btn btn-sm btn-outline-secondary">Open Queue</a>
+                    </div>
+                    <div class="admin-panel-body">
+                        {% if recent_reports %}
+                            <div class="admin-list">
+                                {% for report in recent_reports %}
+                                    <div class="admin-list-item">
+                                        <div>
+                                            <div class="fw-semibold">{{ report.title }}</div>
+                                            <div class="text-muted small">
+                                                {{ report.reporter.username }} reported {{ report.reported_user.username }}
+                                            </div>
+                                        </div>
+                                        <span class="badge {% if report.status == 'pending' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                                            {{ report.status|capfirst }}
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">No reports have been submitted recently.</p>
+                        {% endif %}
+                    </div>
+                </section>
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
-
-

@@ -1,5 +1,5 @@
-{% extends 'base.html' %}
-{% load static %}
+﻿{% extends 'base.html' %}
+{% load static custom_filters %}
 
 {% block title %}{{ farmer.username }}'s Reviews - Farm Connect{% endblock %}
 
@@ -18,10 +18,10 @@
                     <div class="farmer-info mb-4 p-3 bg-light rounded">
                         <div class="d-flex align-items-center">
                             {% if farmer.profile_image %}
-                                <img src="{{ farmer.profile_image.url }}" alt="{{ farmer.username }}" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                <img src="{{ farmer.profile_image.url }}" alt="{{ farmer.username }}" class="rounded-circle me-3 farmer-avatar-image">
                             {% else %}
-                                <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
-                                    <i class="bi bi-person-fill text-white" style="font-size: 1.5rem;"></i>
+                                <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3 farmer-avatar-fallback">
+                                    <i class="bi bi-person-fill text-white avatar-icon-md"></i>
                                 </div>
                             {% endif %}
                             <div>
@@ -70,7 +70,7 @@
                         </div>
                     {% else %}
                         <div class="text-center py-5">
-                            <i class="bi bi-chat-square-text text-muted" style="font-size: 3rem;"></i>
+                            <i class="bi bi-chat-square-text text-muted empty-state-icon-lg"></i>
                             <h5 class="mt-3 text-muted">No Reviews Yet</h5>
                             <p class="text-muted">{{ farmer.username }} hasn't received any reviews yet.</p>
                         </div>
@@ -92,8 +92,8 @@
                                 {% with reviews|filter_rating:rating|length as rating_count %}
                                     <div class="d-flex align-items-center mb-2">
                                         <span class="me-2">{{ rating }} <i class="bi bi-star-fill text-warning"></i></span>
-                                        <div class="progress flex-grow-1" style="height: 8px;">
-                                            <div class="progress-bar bg-warning" style="width: {% if total_count %}{{ rating_count|mul:100|div:total_count }}{% else %}0{% endif %}%"></div>
+                                        <div class="progress flex-grow-1 progress-thin">
+                                            <div class="progress-bar bg-warning js-progress-width" data-progress-width="{% if total_count %}{{ rating_count|mul:100|div:total_count }}{% else %}0{% endif %}"></div>
                                         </div>
                                         <span class="ms-2 small">{{ rating_count }}</span>
                                     </div>
@@ -111,7 +111,7 @@
                 </div>
                 <div class="card-body">
                     {% if user.is_authenticated and user != farmer %}
-                        <a href="{% url 'start_conversation' farmer.id %}" class="btn btn-success w-100 mb-2">
+                        <a href="{% url 'messages:start_conversation' farmer.id %}" class="btn btn-success w-100 mb-2">
                             <i class="bi bi-chat-dots me-2"></i>Message {{ farmer.username }}
                         </a>
                     {% endif %}
@@ -123,18 +123,5 @@
         </div>
     </div>
 </div>
-
-<style>
-.review-item {
-    transition: box-shadow 0.2s ease;
-}
-
-.review-item:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.rating-summary .bi-star {
-    font-size: 1.1rem;
-}
-</style>
 {% endblock %}
+

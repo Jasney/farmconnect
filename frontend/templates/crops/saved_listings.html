@@ -13,9 +13,9 @@
     </div>
 </div>
 
-{% if saved_crops %}
+{% if saved_entries %}
 <div class="row g-4">
-    {% for saved in saved_crops %}
+    {% for saved in saved_entries %}
         <div class="col-md-6 col-lg-4">
             <div class="card shadow-sm h-100">
                 {% if saved.crop.image %}
@@ -24,9 +24,9 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ saved.crop.name }}</h5>
                     <p class="card-text">{{ saved.crop.description|truncatechars:100 }}</p>
-                    <p class="text-success fw-bold">Ksh {{ saved.crop.price }} / {{ saved.crop.unit }}</p>
+                    <p class="text-success fw-bold">Ksh {{ saved.crop.price_per_unit }} / {{ saved.crop.unit }}</p>
                     <a href="{% url 'crop_detail' saved.crop.id %}" class="btn btn-outline-success btn-sm">View</a>
-                    <a href="{% url 'unsave_crop' saved.id %}" class="btn btn-success btn-sm">Remove</a>
+                    <a href="{% url 'toggle_save' saved.crop.id %}" class="btn btn-success btn-sm">Remove</a>
                 </div>
             </div>
         </div>

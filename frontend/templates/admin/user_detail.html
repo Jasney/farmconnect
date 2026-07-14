@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
 {% block title %}User Details - Admin Dashboard{% endblock %}
 
@@ -27,8 +27,8 @@
                     {% if profile_user.profile_image %}
                         <img src="{{ profile_user.profile_image.url }}" class="rounded-circle mb-3" width="120" height="120" alt="Profile">
                     {% else %}
-                        <div class="bg-secondary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
-                            <i class="bi bi-person-fill text-white" style="font-size: 3rem;"></i>
+                        <div class="bg-secondary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center avatar-shell avatar-120">
+                            <i class="bi bi-person-fill text-white avatar-icon-xl"></i>
                         </div>
                     {% endif %}
                     <h4>{{ profile_user.get_full_name|default:profile_user.username }}</h4>
@@ -183,14 +183,4 @@
         </div>
     </div>
 </div>
-
-<style>
-.glass-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-</style>
 {% endblock %}

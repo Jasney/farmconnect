@@ -3,11 +3,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from django.db.models import Q, Count, Avg
+from django.urls import reverse, reverse_lazy
+from django.db.models import Q, Avg
 from django.utils import timezone
 from .models import Crop, SavedListing, PurchaseRequest, Review, CropCategory
 from .forms import CropForm, PurchaseRequestForm, ReviewForm
+from .insights import get_buyer_matches, get_crop_price_insights
 from messaging.models import Notification
 from admin_panel.models import AdminActionLog
 from accounts.models import FarmerProfile
@@ -20,8 +21,8 @@ class CropListView(ListView):
 
     def get_queryset(self):
         queryset = Crop.objects.filter(
-            is_active=True, 
-            farmer__farmer_verification_status='verified'
+            is_active=True,
+            farmer__farmer_verification_status__in=['verified', 'under_review']
         ).select_related('farmer', 'category')
         query = self.request.GET.get('q')
         crop_type = self.request.GET.get('type')
@@ -79,6 +80,7 @@ class CropDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         crop = self.get_object()
+        farmer_profile = getattr(crop.farmer, 'farmer_profile', None)
         
         # Reviews and ratings
         context['reviews'] = crop.reviews.filter(is_approved=True).order_by('-created_at')
@@ -88,15 +90,22 @@ class CropDetailView(DetailView):
         # Farmer info
         context['farmer_reviews'] = Review.objects.filter(farmer=crop.farmer, is_approved=True).count()
         context['farmer_rating'] = crop.farmer.get_rating()
-        context['farmer_trust_score'] = getattr(crop.farmer.farmer_profile, 'trust_score', 0)
-        context['farmer_risk_level'] = getattr(crop.farmer.farmer_profile, 'risk_level', 'moderate')
+        context['farmer_trust_score'] = getattr(farmer_profile, 'trust_score', 0)
+        context['farmer_risk_level'] = getattr(farmer_profile, 'risk_level', 'moderate')
         
         # Farmer's other products
         context['farmer_products'] = Crop.objects.filter(farmer=crop.farmer, is_active=True).exclude(id=crop.id)[:5]
+        context['price_insight'] = get_crop_price_insights(
+            crop.name,
+            listing_price=crop.price_per_unit,
+            location=getattr(crop.farmer, 'location', ''),
+        )
         
         # Check if user saved this crop
         if self.request.user.is_authenticated:
             context['is_saved'] = SavedListing.objects.filter(user=self.request.user, crop=crop).exists()
+            if self.request.user == crop.farmer:
+                context['buyer_matches'] = get_buyer_matches(crop)
         
         return context
 
@@ -119,7 +128,9 @@ class CropCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.farmer = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        messages.success(self.request, f'"{self.object.name}" was added successfully and is now in your listings.')
+        return response
 
 class CropUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Crop
@@ -138,7 +149,12 @@ class CropUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return redirect('accounts:dashboard')
 
     def get_success_url(self):
-        return reverse_lazy('crop_detail', kwargs={'pk': self.object.pk})
+        return reverse('crop_detail', kwargs={'pk': self.object.pk})
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, f'"{self.object.name}" was updated successfully.')
+        return response
 
 class CropDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Crop
@@ -154,6 +170,13 @@ class CropDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def handle_no_permission(self):
         messages.error(self.request, 'Only verified farmers can delete crop listings.')
         return redirect('accounts:dashboard')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        crop_name = self.object.name
+        response = super().delete(request, *args, **kwargs)
+        messages.success(request, f'"{crop_name}" was removed from your listings.')
+        return response
 
 @login_required
 def my_listings(request):
@@ -366,7 +389,10 @@ def flag_review(request, review_id):
         review.save()
         
         messages.success(request, 'Review flagged for admin review.')
-        return redirect(request.META.get('HTTP_REFERER', 'crop_detail'))
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('crop_detail', pk=review.crop_id)
     
     return render(request, 'crops/flag_review.html', {'review': review})
 

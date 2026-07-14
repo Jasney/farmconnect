@@ -1,0 +1,111 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Verification Details - Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="text-success">Verification Details for {{ farmer.get_full_name|default:farmer.username }}</h1>
+            <p class="text-muted">Review submitted farmer document(s) and take action.</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'admin_panel:manage_verifications' %}" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-arrow-left"></i> Back to Verifications
+            </a>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">{{ farmer.email }}</dd>
+
+                <dt class="col-sm-3">Phone</dt>
+                <dd class="col-sm-9">{{ farmer.phone|default:'Not provided' }}</dd>
+
+                <dt class="col-sm-3">Location</dt>
+                <dd class="col-sm-9">{{ farmer.location|default:'Not provided' }}</dd>
+
+                <dt class="col-sm-3">National ID</dt>
+                <dd class="col-sm-9">{{ farmer.national_id|default:'Not provided' }}</dd>
+
+                <dt class="col-sm-3">Verification Status</dt>
+                <dd class="col-sm-9">{{ farmer.get_farmer_verification_status_display }}</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h4>Submitted Documents</h4>
+            {% if documents %}
+                <div class="list-group mb-4">
+                    {% for doc in documents %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6>{{ doc.get_document_type_display }}</h6>
+                                    <p class="mb-0">Submitted at: {{ doc.submitted_at|date:'Y-m-d H:i' }}</p>
+                                    <p class="mb-0">Document status: {{ doc.get_status_display }}</p>
+                                </div>
+                                <a href="{{ doc.document_file.url }}" target="_blank" class="btn btn-sm btn-primary">View document</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No documents uploaded.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Verification Timeline -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4>Verification Timeline</h4>
+            {% if verification_timeline %}
+                <div class="timeline">
+                    {% for action in verification_timeline %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-{% if action.action_type == 'verification_approved' %}success{% elif action.action_type == 'verification_rejected' %}danger{% else %}info{% endif %}"></div>
+                            <div class="timeline-content">
+                                <h6 class="timeline-title">
+                                    {{ action.get_action_type_display }}
+                                    {% if action.admin %}
+                                        by {{ action.admin.username }}
+                                    {% endif %}
+                                </h6>
+                                <p class="timeline-text">{{ action.description }}</p>
+                                {% if action.reason %}
+                                    <p class="timeline-text text-muted"><small>Reason: {{ action.reason }}</small></p>
+                                {% endif %}
+                                <small class="text-muted">{{ action.timestamp|date:'M d, Y H:i' }}</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No verification actions recorded yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="btn-group" role="group">
+                <a href="{% url 'admin_panel:approve_verification' farmer.id %}" class="btn btn-success">
+                    <i class="bi bi-check-circle"></i> Approve
+                </a>
+                <a href="{% url 'admin_panel:reject_verification' farmer.id %}" class="btn btn-danger">
+                    <i class="bi bi-x-circle"></i> Reject
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -6,9 +6,10 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.db.models import Avg, Count, Q
 from django.utils import timezone
-from .forms import RegisterForm, LoginForm, ContactForm, VerificationDocumentForm, FarmerVerificationForm
+from .forms import RegisterForm, LoginForm, ContactForm, FarmerVerificationForm
 from .models import CustomUser
 from crops.models import Crop, SavedListing, PurchaseRequest
+from crops.insights import build_assistant_response, get_price_insight_cards
 from market.models import MarketPrice
 from messaging.models import Message
 from admin_panel.models import UserReport, AdminActionLog, AccountAppeal
@@ -112,32 +113,36 @@ def dashboard(request):
     if request.user.role == 'admin':
         return redirect('admin_panel:dashboard')
 
-    base_market_prices = MarketPrice.objects.all().order_by('-updated_at')[:5]
     context = {
         'user': request.user,
-        'market_prices': base_market_prices,
     }
 
     if request.user.role == 'farmer':
         # Ensure FarmerProfile exists
         from .models import FarmerProfile
         FarmerProfile.objects.get_or_create(user=request.user)
+        my_listings = Crop.objects.filter(farmer=request.user).order_by('-created_at')
 
         is_blocked = request.user.account_status == 'blocked'
 
         dashboard_data = {
-            'farmers_status': request.user.farmer_verification_status,
             'farmer_status': request.user.farmer_verification_status,
             'verification_form': None,
             'is_blocked': is_blocked,
+            'assistant_prompts': [
+                'Who are the best buyers for my latest crop?',
+                'What price should I compare against today?',
+                'Which crop listing needs a pricing review?',
+            ],
         }
 
         if not is_blocked:
             dashboard_data.update({
-                'my_listings': Crop.objects.filter(farmer=request.user),
-                'total_listings': Crop.objects.filter(farmer=request.user).count(),
+                'my_listings': my_listings,
+                'total_listings': my_listings.count(),
                 'new_messages': Message.objects.filter(conversation__participants=request.user, is_read=False).exclude(sender=request.user).count(),
                 'incoming_requests': PurchaseRequest.objects.filter(crop__farmer=request.user, status='pending'),
+                'price_insight_cards': get_price_insight_cards(my_listings, limit=3),
             })
         else:
             dashboard_data.update({
@@ -145,18 +150,47 @@ def dashboard(request):
                 'total_listings': 0,
                 'new_messages': 0,
                 'incoming_requests': PurchaseRequest.objects.none(),
+                'price_insight_cards': [],
             })
 
         context.update(dashboard_data)
     elif request.user.role == 'buyer':
+        saved_listings = SavedListing.objects.filter(user=request.user).select_related('crop', 'crop__farmer')
         context.update({
-            'saved_listings': SavedListing.objects.filter(user=request.user),
+            'saved_listings': saved_listings,
             'new_messages': Message.objects.filter(conversation__participants=request.user, is_read=False).exclude(sender=request.user).count(),
             'pending_requests': PurchaseRequest.objects.filter(buyer=request.user).order_by('-created_at'),
+            'price_insight_cards': get_price_insight_cards([entry.crop for entry in saved_listings], limit=3),
+            'assistant_prompts': [
+                'What is the current price of maize?',
+                'Which saved listing looks best today?',
+                'Where is the best market for tomatoes?',
+            ],
         })
 
     # Use shared user dashboard template for farmers/buyers
     return render(request, 'dashboard.html', context)
+
+
+@login_required
+def ai_assistant(request):
+    question = ''
+    assistant_result = build_assistant_response(request.user, '')
+
+    if request.method == 'POST':
+        question = request.POST.get('question', '').strip()
+        assistant_result = build_assistant_response(request.user, question)
+
+    context = {
+        'question': question,
+        'assistant_result': assistant_result,
+        'starter_prompts': [
+            'What is the price of maize?',
+            'Who are the best buyers for my crop?',
+            'Which market is paying the most for beans?',
+        ],
+    }
+    return render(request, 'accounts/ai_assistant.html', context)
 
 
 @login_required
@@ -417,7 +451,8 @@ def farmer_verification(request):
                 )
             
             # Update farmer profile
-            profile = request.user.farmer_profile
+            from .models import FarmerProfile
+            profile, _ = FarmerProfile.objects.get_or_create(user=request.user)
             profile.farm_size_acres = farm_size or profile.farm_size_acres
             profile.years_in_business = experience_years or profile.years_in_business
             profile.save()
@@ -431,7 +466,7 @@ def farmer_verification(request):
             # Log action
             AdminActionLog.objects.create(
                 admin=None,
-                action_type='verification_submitted',
+                action_type='other',
                 target_user=request.user,
                 description=f'{request.user.username} submitted verification documents'
             )

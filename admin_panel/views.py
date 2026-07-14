@@ -21,7 +21,7 @@ def is_admin(user):
 def admin_dashboard(request):
     """Main admin dashboard"""
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
     
     context = {
         'total_users': User.objects.count(),
@@ -57,7 +57,7 @@ def admin_dashboard(request):
 def user_management(request):
     """Manage all users - view, flag, suspend, block"""
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
     
     users = User.objects.filter(role__in=['farmer', 'buyer']).order_by('-date_joined')
     
@@ -83,7 +83,7 @@ def user_management(request):
 def user_detail(request, user_id):
     """View detailed profile of a user"""
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
     
     user = get_object_or_404(User, id=user_id)
     
@@ -105,7 +105,7 @@ def user_detail(request, user_id):
 def flag_user(request, user_id):
     """Flag a user account for suspicious activity"""
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
     
     user = get_object_or_404(User, id=user_id)
     
@@ -126,7 +126,7 @@ def flag_user(request, user_id):
             reason=reason
         )
         
-        return redirect('admin:user_detail', user_id=user.id)
+        return redirect('admin_panel:user_detail', user_id=user.id)
     
     return render(request, 'admin/flag_user.html', {'user': user})
 
@@ -135,7 +135,7 @@ def flag_user(request, user_id):
 def suspend_user(request, user_id):
     """Suspend a user account temporarily"""
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
     
     user = get_object_or_404(User, id=user_id)
     
@@ -156,7 +156,7 @@ def suspend_user(request, user_id):
             reason=reason
         )
         
-        return redirect('admin:user_detail', user_id=user.id)
+        return redirect('admin_panel:user_detail', user_id=user.id)
     
     return render(request, 'admin/suspend_user.html', {'user': user})
 
@@ -165,26 +165,50 @@ def suspend_user(request, user_id):
 def manage_verifications(request):
     """Manage farmer verification requests"""
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
     
     pending_farmers = CustomUser.objects.filter(
         role='farmer',
         farmer_verification_status__in=['pending', 'under_review']
-    ).select_related('farmer_profile')
+    ).select_related('farmer_profile').prefetch_related('verification_documents')
     
     context = {
         'pending_verifications': pending_farmers,
         'total_pending': pending_farmers.count(),
+        'approved_count': CustomUser.objects.filter(role='farmer', farmer_verification_status='verified').count(),
+        'rejected_count': CustomUser.objects.filter(role='farmer', farmer_verification_status='rejected').count(),
     }
     
     return render(request, 'admin/manage_verifications.html', context)
 
 
 @login_required
+def verification_detail(request, user_id):
+    """View detailed farmer verification submission documents and status"""
+    if not is_admin(request.user):
+        return redirect('landing')
+
+    farmer = get_object_or_404(CustomUser, id=user_id, role='farmer')
+    documents = farmer.verification_documents.all()
+    
+    # Get verification timeline (all admin actions related to this farmer's verification)
+    verification_timeline = AdminActionLog.objects.filter(
+        target_user=farmer,
+        action_type__in=['verification_approved', 'verification_rejected', 'verification_pending', 'verification_under_review']
+    ).order_by('-timestamp')
+
+    return render(request, 'admin/verification_detail.html', {
+        'farmer': farmer,
+        'documents': documents,
+        'verification_timeline': verification_timeline,
+    })
+
+
+@login_required
 def approve_verification(request, user_id):
     """Approve a farmer verification"""
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
     
     farmer = get_object_or_404(CustomUser, id=user_id, role='farmer')
     farmer.farmer_verification_status = 'verified'
@@ -205,9 +229,10 @@ def approve_verification(request, user_id):
 def reject_verification(request, user_id):
     """Reject a farmer verification"""
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
     
     farmer = get_object_or_404(CustomUser, id=user_id, role='farmer')
+    reason = request.GET.get('reason', '').strip()
     farmer.farmer_verification_status = 'rejected'
     farmer.save()
     
@@ -215,7 +240,8 @@ def reject_verification(request, user_id):
         admin=request.user,
         action_type='verification_rejected',
         target_user=farmer,
-        description=f"Verification rejected for {farmer.username}"
+        description=f"Verification rejected for {farmer.username}. Reason: {reason or 'No reason provided'}",
+        reason=reason if hasattr(AdminActionLog, 'reason') else ''
     )
     
     return redirect('admin_panel:manage_verifications')
@@ -225,7 +251,7 @@ def reject_verification(request, user_id):
 def user_reports(request):
     """View all user reports"""
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
     
     reports = UserReport.objects.select_related('reported_user', 'reporter').order_by('-created_at')
     
@@ -252,7 +278,7 @@ def user_reports(request):
 def report_detail(request, report_id):
     """View and handle specific report"""
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
     
     report = get_object_or_404(UserReport, id=report_id)
     
@@ -305,7 +331,7 @@ def report_detail(request, report_id):
         report.reviewed_at = timezone.now()
         report.save()
         
-        return redirect('admin:user_reports')
+        return redirect('admin_panel:user_reports')
     
     return render(request, 'admin/report_detail.html', {'report': report})
 
@@ -314,7 +340,7 @@ def report_detail(request, report_id):
 def account_appeals(request):
     """View all farmer account appeals"""
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
 
     appeals = AccountAppeal.objects.select_related('farmer', 'reviewed_by').order_by('-created_at')
     return render(request, 'admin/account_appeals.html', {
@@ -326,7 +352,7 @@ def account_appeals(request):
 @login_required
 def appeal_detail(request, appeal_id):
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
 
     appeal = get_object_or_404(AccountAppeal, id=appeal_id)
 
@@ -360,60 +386,10 @@ def appeal_detail(request, appeal_id):
 
 
 @login_required
-def manage_verifications(request):
-    """Manage farmer verification documents"""
-    if not is_admin(request.user):
-        return redirect('home')
-    
-    from accounts.models import VerificationDocument
-    
-    verifications = VerificationDocument.objects.select_related('farmer').filter(status='pending')
-    
-    context = {
-        'verifications': verifications,
-        'total_pending': verifications.count(),
-        'approved_count': VerificationDocument.objects.filter(status='verified').count(),
-        'rejected_count': VerificationDocument.objects.filter(status='rejected').count(),
-    }
-    
-    return render(request, 'admin/manage_verifications.html', context)
-
-
-@login_required
-def approve_verification(request, doc_id):
-    """Approve a verification document"""
-    if not is_admin(request.user):
-        return redirect('home')
-    
-    from accounts.models import VerificationDocument
-    
-    doc = get_object_or_404(VerificationDocument, id=doc_id)
-    doc.status = 'verified'
-    doc.verified_by = request.user
-    doc.verified_at = timezone.now()
-    doc.save()
-    
-    # Update farmer status
-    farmer = doc.farmer
-    farmer.farmer_verification_status = 'verified'
-    farmer.kyc_verified_date = timezone.now()
-    farmer.save()
-    
-    AdminActionLog.objects.create(
-        admin=request.user,
-        action_type='verification_approved',
-        target_user=farmer,
-        description=f"Verification approved for {farmer.username}"
-    )
-    
-    return redirect('admin:manage_verifications')
-
-
-@login_required
 def activity_logs(request):
     """View admin activity logs"""
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
     
     logs = AdminActionLog.objects.select_related('admin', 'target_user').order_by('-timestamp')
     
@@ -434,7 +410,7 @@ def activity_logs(request):
 def platform_analytics(request):
     """View platform-wide analytics"""
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
     
     # Get latest stats
     latest_stats = PlatformStats.objects.latest('date') if PlatformStats.objects.exists() else None
@@ -478,7 +454,7 @@ def platform_analytics(request):
 def ai_monitoring(request):
     """AI-powered monitoring dashboard for farmers"""
     if not is_admin(request.user):
-        return redirect('home')
+        return redirect('landing')
     
     from accounts.models import FarmerProfile
     from accounts.ml_utils import update_farmer_risk_scores

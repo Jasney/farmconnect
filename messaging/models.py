@@ -1,8 +1,21 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.db.models import Count, Q
 
 User = get_user_model()
+
+class ConversationManager(models.Manager):
+    """Custom manager for Conversation model"""
+    
+    def with_unread_count(self, user):
+        """Get conversations with unread message count for a specific user"""
+        return self.filter(participants=user).annotate(
+            unread_count=Count(
+                'messages',
+                filter=Q(messages__is_read=False) & ~Q(messages__sender=user)
+            )
+        )
 
 class Conversation(models.Model):
     """Thread of messages between two users"""
@@ -11,6 +24,8 @@ class Conversation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_blocked = models.BooleanField(default=False)
+    
+    objects = ConversationManager()
 
     class Meta:
         ordering = ['-updated_at']

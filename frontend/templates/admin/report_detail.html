@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
 {% block title %}Report Details - Admin Dashboard{% endblock %}
 
@@ -39,7 +39,7 @@
                                 {% if report.reported_user.profile_image %}
                                     <img src="{{ report.reported_user.profile_image.url }}" class="rounded-circle me-3" width="50" height="50" alt="Profile">
                                 {% else %}
-                                    <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                    <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center avatar-shell avatar-50">
                                         <i class="bi bi-person-fill text-white"></i>
                                     </div>
                                 {% endif %}
@@ -55,7 +55,7 @@
                                 {% if report.reporter.profile_image %}
                                     <img src="{{ report.reporter.profile_image.url }}" class="rounded-circle me-3" width="50" height="50" alt="Profile">
                                 {% else %}
-                                    <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                    <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center avatar-shell avatar-50">
                                         <i class="bi bi-person-fill text-white"></i>
                                     </div>
                                 {% endif %}
@@ -117,7 +117,7 @@
                             </select>
                         </div>
 
-                        <div class="mb-3" id="user_action_div" style="display: none;">
+                        <div class="mb-3 is-hidden" id="user_action_div">
                             <label class="form-label">User Action (if resolving)</label>
                             <select name="user_action" class="form-select">
                                 <option value="">No action</option>
@@ -168,14 +168,4 @@ document.querySelector('select[name="action"]').addEventListener('change', funct
     }
 });
 </script>
-
-<style>
-.glass-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-</style>
 {% endblock %}

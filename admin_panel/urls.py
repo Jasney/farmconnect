@@ -12,6 +12,7 @@ urlpatterns = [
     path('reports/', views.user_reports, name='user_reports'),
     path('reports/<int:report_id>/', views.report_detail, name='report_detail'),
     path('verifications/', views.manage_verifications, name='manage_verifications'),
+    path('verifications/<int:user_id>/detail/', views.verification_detail, name='verification_detail'),
     path('verifications/<int:user_id>/approve/', views.approve_verification, name='approve_verification'),
     path('verifications/<int:user_id>/reject/', views.reject_verification, name='reject_verification'),
     path('logs/', views.activity_logs, name='activity_logs'),

@@ -7,60 +7,68 @@
 {% block title %}Browse Crops - Farm Connect{% endblock %}
 
 {% block content %}
-<div class="container py-5">
+<div class="container mt-4 mb-5">
     <!-- Header Section -->
-    <div class="glass-dark text-center mb-4">
-        <h2 class="mb-0">
-            <i class="bi bi-shop me-2"></i>Browse Crops
-            <span class="badge bg-success ms-2">{{ crops|length }} listings</span>
-        </h2>
+    <div class="text-center mb-5">
+        <h1 class="mb-2">
+            <i class="bi bi-shop me-2 text-success"></i>Browse Fresh Crops
+        </h1>
+        <p class="text-muted fs-5 mb-0">Discover quality produce from verified farmers</p>
+        <span class="badge bg-success mt-3 py-2 px-3">{{ crops|length }} Active Listings</span>
     </div>
 
-    <!-- Filters -->
-<div class="glass-card mb-4">
-    <h5 class="text-white mb-3"><i class="bi bi-funnel me-2"></i>Filter Results</h5>
-    <form method="get">
-        <div class="row g-3">
-            <div class="col-md-3">
-                <input type="text" name="q" class="form-control" placeholder="Search crops..." value="{{ request.GET.q }}" style="background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(0, 0, 0, 0.15); color: #333;">
-            </div>
-            <div class="col-md-2">
-                <select name="type" class="form-select" style="background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(0, 0, 0, 0.15); color: #333;">
-                    <option value="" style="background: #fff; color: #333;">All Types</option>
-                    {% for type in crop_types %}
-                        <option value="{{ type }}" {% if request.GET.type == type %}selected{% endif %} style="background: #fff; color: #333;">{{ type }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-2">
-                <select name="category" class="form-select" style="background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(0, 0, 0, 0.15); color: #333;">
-                    <option value="" style="background: #fff; color: #333;">All Categories</option>
-                    {% for cat in categories %}
-                        <option value="{{ cat.slug }}" {% if request.GET.category == cat.slug %}selected{% endif %} style="background: #fff; color: #333;">{{ cat.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-2">
-                <input type="number" name="max_price" class="form-control" placeholder="Max Ksh" value="{{ request.GET.max_price }}" style="background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(0, 0, 0, 0.15); color: #333;">
-            </div>
-            <div class="col-md-3">
-                <button type="submit" class="btn btn-success w-100">
-                    <i class="bi bi-search"></i> Filter
-                </button>
-            </div>
+    <!-- Filters Section -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-body">
+            <h5 class="card-title mb-4"><i class="bi bi-funnel me-2"></i>Filter Results</h5>
+            <form method="get">
+                <div class="row g-3">
+                    <div class="col-lg-3 col-sm-6">
+                        <label class="form-label">Search Crops</label>
+                        <input type="text" name="q" class="form-control" placeholder="Search crops..." value="{{ request.GET.q }}">
+                    </div>
+                    <div class="col-lg-2 col-sm-6">
+                        <label class="form-label">Type</label>
+                        <select name="type" class="form-select">
+                            <option value="">All Types</option>
+                            {% for type in crop_types %}
+                                <option value="{{ type }}" {% if request.GET.type == type %}selected{% endif %}>{{ type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-sm-6">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.slug }}" {% if request.GET.category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-sm-6">
+                        <label class="form-label">Max Price</label>
+                        <input type="number" name="max_price" class="form-control" placeholder="Max Ksh" value="{{ request.GET.max_price }}">
+                    </div>
+                    <div class="col-lg-3">
+                        <label class="form-label d-block">&nbsp;</label>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-search me-2"></i>Filter Results
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
-</div>
+    </div>
 
-<!-- Crops Grid -->
-<div class="row g-4">
+    <!-- Crops Grid -->
+    <div class="row g-4">
     {% for crop in crops %}
-        <div class="col-lg-4 col-md-6">
-            <div class="crop-card glass-card h-100 shadow-sm">
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="crop-card card h-100 shadow-sm glass-card">
                 {% if crop.image %}
                     <img src="{{ crop.image.url }}" class="card-img-top" alt="{{ crop.name }}">
                 {% else %}
-                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center text-muted" style="height: 200px;">
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center text-muted crop-image-placeholder">
                         <i class="bi bi-image display-1 opacity-50"></i>
                     </div>
                 {% endif %}
@@ -68,13 +76,13 @@
                     <h5 class="card-title">{{ crop.name }} ({{ crop.get_type_display }})</h5>
                     <p class="card-text">{{ crop.description|truncatechars:100 }}</p>
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="h4 text-success fw-bold">Ksh {{ crop.price }} / {{ crop.unit }}</span>
+                        <span class="h4 text-success fw-bold">Ksh {{ crop.price_per_unit }} / {{ crop.unit }}</span>
                         <span class="badge bg-success">{{ crop.farmer.location }}</span>
                     </div>
                     <div class="d-flex gap-2">
                         <a href="{% url 'crop_detail' crop.id %}" class="btn btn-outline-success flex-fill">View</a>
                         {% if user.is_authenticated and user.role == 'buyer' %}
-                            <form method="post" action="{% url 'toggle_save' crop.id %}" style="display: inline;">
+                            <form method="post" action="{% url 'toggle_save' crop.id %}" class="inline-form">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-light">
                                     {% if crop.id in saved_crops %}
@@ -99,13 +107,14 @@
     {% endfor %}
     {% if not crops %}
         <div class="col-12">
-            <div class="glass-card empty-state">
+            <div class="card empty-state glass-card">
                 <i class="bi bi-search"></i>
                 <h5>No crops found</h5>
                 <p>Try adjusting your search or filters.</p>
             </div>
         </div>
     {% endif %}
+    </div>
 </div>
 {% endblock %}
 

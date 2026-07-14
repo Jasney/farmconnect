@@ -92,6 +92,10 @@ class CustomUser(AbstractUser):
             return self.farmer_profile.rating_score
         except:
             return 0
+    
+    def is_pending_verification(self):
+        """Check if farmer is pending or under review for verification"""
+        return self.farmer_verification_status in ['pending', 'under_review']
 
 
 class FarmerProfile(models.Model):

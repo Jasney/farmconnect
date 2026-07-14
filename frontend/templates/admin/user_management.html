@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
 {% block title %}User Management - Admin Dashboard{% endblock %}
 
@@ -77,7 +77,7 @@
                                             {% if user.profile_image %}
                                                 <img src="{{ user.profile_image.url }}" class="rounded-circle me-3" width="40" height="40" alt="Profile">
                                             {% else %}
-                                                <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center avatar-shell avatar-40">
                                                     <i class="bi bi-person-fill text-white"></i>
                                                 </div>
                                             {% endif %}
@@ -130,14 +130,4 @@
         </div>
     </div>
 </div>
-
-<style>
-.glass-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-</style>
 {% endblock %}

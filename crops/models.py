@@ -69,6 +69,11 @@ class Crop(models.Model):
     def get_absolute_url(self):
         from django.urls import reverse
         return reverse('crop_detail', args=[str(self.id)])
+
+    @property
+    def price(self):
+        # Backward compatible alias for templates using crop.price
+        return self.price_per_unit
     
     def get_average_rating(self):
         """Get average rating from related reviews"""

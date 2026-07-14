@@ -1,113 +1,244 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Farm Connect - Modern Agriculture Platform{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/landing.css' %}">
-</style>
-{% endblock %}
+{% block title %}FarmConnect | Connect Farmers to Markets, Instantly{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero" id="home">
-    <div class="hero-inner">
-        <div class="text-container">
-            <span class="text-label">Connecting Farmers & Buyers</span>
-            <h1>Grow Your Market with Farm Connect</h1>
-            <p>A premium agricultural marketplace for transparent KES pricing and instant farmer-buyer networking. List products, contact buyers, and move product fast.</p>
-            <div class="mt-4 d-flex gap-2 flex-wrap justify-content-center">
-                {% if not user.is_authenticated %}
-                    <a class="btn btn-primary btn-lg" href="{% url 'accounts:register' %}">Get Started</a>
-                    <a class="btn btn-secondary btn-lg" href="#about">Learn More</a>
-                {% else %}
-                    <a class="btn btn-primary btn-lg" href="{% url 'accounts:dashboard' %}">Go to Dashboard</a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</section>
+<div class="farm-landing">
+    <section class="landing-hero reveal-on-scroll" id="home">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-copy">
+                    <span class="eyebrow">Digital agriculture marketplace</span>
+                    <h1>Connect Farmers to Markets, Instantly</h1>
+                    <p class="hero-subtext">
+                        FarmConnect helps farmers find buyers, access real-time prices, and sell crops easily.
+                    </p>
+                    <div class="hero-actions">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'accounts:dashboard' %}" class="btn hero-btn hero-btn-primary">Get Started</a>
+                        {% else %}
+                            <a href="{% url 'accounts:register' %}" class="btn hero-btn hero-btn-primary">Get Started</a>
+                        {% endif %}
+                        <a href="{% url 'crop_list' %}" class="btn hero-btn hero-btn-secondary">Browse Crops</a>
+                    </div>
+                    <div class="hero-metrics">
+                        <div class="metric-card">
+                            <strong>Real-time</strong>
+                            <span>Market price visibility</span>
+                        </div>
+                        <div class="metric-card">
+                            <strong>Direct</strong>
+                            <span>Farmer to buyer connections</span>
+                        </div>
+                        <div class="metric-card">
+                            <strong>Simple</strong>
+                            <span>Fast crop listing workflow</span>
+                        </div>
+                    </div>
+                </div>
 
-<!-- Benefits Section -->
-<section class="benefits-section py-5">
-    <div class="container">
-        <div class="benefits-box">
-            <h3><i class="bi bi-lightning-fill me-2"></i>Why Farm Connect?</h3>
-            <ul>
-                <li><strong>✅ Direct Access</strong> - Farmers list directly, buyers purchase directly</li>
-                <li><strong>✅ Fair Pricing</strong> - Transparent KES pricing with no hidden fees</li>
-                <li><strong>✅ Instant Networking</strong> - Connect with buyers and sellers instantly</li>
-                <li><strong>✅ Fast Transactions</strong> - Move products quickly</li>
-            </ul>
-        </div>
-    </div>
-</section>
+                <div class="hero-visual" aria-hidden="true">
+                    <div class="hero-art">
+                        <div class="hero-sun"></div>
+                        <div class="hero-cloud hero-cloud-left"></div>
+                        <div class="hero-cloud hero-cloud-right"></div>
+                        <div class="hero-field hero-field-back"></div>
+                        <div class="hero-field hero-field-mid"></div>
+                        <div class="hero-field hero-field-front"></div>
 
-<!-- Features Grid -->
-<section class="features-section py-5" id="about">
-    <div class="container">
-        <div class="features-header">
-            <h2>Our Core Features</h2>
-            <p>Everything you need to succeed in the agricultural marketplace</p>
-        </div>
+                        <div class="floating-card price-card">
+                            <div class="floating-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                            <div>
+                                <strong>Live Prices</strong>
+                                <span>Maize, beans, tomatoes</span>
+                            </div>
+                        </div>
 
-        <div class="row">
-            <div class="col-md-6 col-lg-3">
-                <div class="green-feature-box">
-                    <div class="icon"><i class="bi bi-shield-check"></i></div>
-                    <h4>Security First</h4>
-                    <p>Your data is protected with enterprise-grade security and role-based access control.</p>
+                        <div class="device-shell">
+                            <div class="device-topbar">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <div class="device-screen">
+                                <div class="screen-badge">
+                                    <i class="bi bi-broadcast-pin"></i>
+                                    Active marketplace
+                                </div>
+                                <div class="screen-card">
+                                    <div class="screen-card-row">
+                                        <div class="crop-dot crop-dot-green"></div>
+                                        <div>
+                                            <strong>Fresh Maize</strong>
+                                            <span>120 buyers nearby</span>
+                                        </div>
+                                        <em>KSh 4,200</em>
+                                    </div>
+                                    <div class="screen-card-row">
+                                        <div class="crop-dot crop-dot-gold"></div>
+                                        <div>
+                                            <strong>Beans</strong>
+                                            <span>Updated 4 mins ago</span>
+                                        </div>
+                                        <em>KSh 8,900</em>
+                                    </div>
+                                    <div class="screen-card-row">
+                                        <div class="crop-dot crop-dot-earth"></div>
+                                        <div>
+                                            <strong>Potatoes</strong>
+                                            <span>Demand rising</span>
+                                        </div>
+                                        <em>KSh 3,600</em>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="floating-card connect-card">
+                            <div class="floating-icon"><i class="bi bi-people-fill"></i></div>
+                            <div>
+                                <strong>Buyer Match</strong>
+                                <span>Instant connection available</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="col-md-6 col-lg-3">
-                <div class="green-feature-box">
-                    <div class="icon"><i class="bi bi-speedometer2"></i></div>
-                    <h4>Fast & Reliable</h4>
-                    <p>Optimized for mobile and works great on 2G networks. Built for field use.</p>
-                </div>
+        </div>
+    </section>
+
+    <section class="landing-section reveal-on-scroll" id="features">
+        <div class="container">
+            <div class="section-heading">
+                <span class="section-kicker">Features</span>
+                <h2>Everything needed to move crops with confidence</h2>
+                <p>Built for practical trade, transparent pricing, and easier access to markets.</p>
             </div>
-            
-            <div class="col-md-6 col-lg-3">
-                <div class="green-feature-box">
-                    <div class="icon"><i class="bi bi-question-circle"></i></div>
-                    <h4>Simple to Use</h4>
-                    <p>Intuitive interface designed for farmers and buyers. Get started in minutes.</p>
-                </div>
+
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-bar-chart-line-fill"></i></div>
+                    <h3>Real-Time Market Prices</h3>
+                    <p>Track current crop pricing trends so farmers and buyers make faster, better decisions.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-people-fill"></i></div>
+                    <h3>Direct Buyer Connections</h3>
+                    <p>Connect directly with serious buyers without relying on slow, fragmented middlemen.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-basket2-fill"></i></div>
+                    <h3>Easy Crop Listings</h3>
+                    <p>Post available produce in minutes with clear quantities, pricing, and product details.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-shield-lock-fill"></i></div>
+                    <h3>Secure Transactions</h3>
+                    <p>Support safer trade through verified accounts, transparent interactions, and trusted workflows.</p>
+                </article>
             </div>
-            
-            <div class="col-md-6 col-lg-3">
-                <div class="green-feature-box">
-                    <div class="icon"><i class="bi bi-chat-dots"></i></div>
-                    <h4>Direct Messaging</h4>
-                    <p>Chat instantly with buyers or farmers. Negotiate and arrange delivery.</p>
+        </div>
+    </section>
+
+    <section class="landing-section steps-section reveal-on-scroll" id="how-it-works">
+        <div class="container">
+            <div class="section-heading">
+                <span class="section-kicker">How It Works</span>
+                <h2>Start selling in three simple steps</h2>
+                <p>FarmConnect keeps the process straightforward so users can focus on selling and buying.</p>
+            </div>
+
+            <div class="steps-grid">
+                <article class="step-card">
+                    <div class="step-top">
+                        <span class="step-number">1</span>
+                        <div class="step-icon"><i class="bi bi-person-plus-fill"></i></div>
+                    </div>
+                    <h3>Sign Up</h3>
+                    <p>Create your account and join a growing network of farmers and produce buyers.</p>
+                </article>
+                <article class="step-card">
+                    <div class="step-top">
+                        <span class="step-number">2</span>
+                        <div class="step-icon"><i class="bi bi-box-seam-fill"></i></div>
+                    </div>
+                    <h3>List Your Crops</h3>
+                    <p>Add crop details, pricing, and available quantity so buyers know exactly what you offer.</p>
+                </article>
+                <article class="step-card">
+                    <div class="step-top">
+                        <span class="step-number">3</span>
+                        <div class="step-icon"><i class="bi bi-arrow-left-right"></i></div>
+                    </div>
+                    <h3>Connect &amp; Sell</h3>
+                    <p>Reach buyers faster, compare market prices, and close deals with more confidence.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="landing-section testimonials-section reveal-on-scroll" id="testimonials">
+        <div class="container">
+            <div class="section-heading">
+                <span class="section-kicker">Testimonials</span>
+                <h2>What farmers are saying</h2>
+                <p>Real value comes from faster visibility, clearer prices, and stronger buyer relationships.</p>
+            </div>
+
+            <div class="testimonial-grid">
+                <article class="testimonial-card">
+                    <p class="testimonial-quote">FarmConnect helped me find buyers faster and at better prices.</p>
+                    <div class="testimonial-meta">
+                        <div class="testimonial-avatar">WM</div>
+                        <div>
+                            <strong>Wanjiku M.</strong>
+                            <span>Vegetable Farmer, Nakuru</span>
+                        </div>
+                    </div>
+                </article>
+                <article class="testimonial-card">
+                    <p class="testimonial-quote">I can check market prices before listing, which gives me more confidence when negotiating.</p>
+                    <div class="testimonial-meta">
+                        <div class="testimonial-avatar">JO</div>
+                        <div>
+                            <strong>Joseph O.</strong>
+                            <span>Maize Farmer, Eldoret</span>
+                        </div>
+                    </div>
+                </article>
+                <article class="testimonial-card">
+                    <p class="testimonial-quote">The platform makes it easier to reach serious buyers without wasting time on unclear offers.</p>
+                    <div class="testimonial-meta">
+                        <div class="testimonial-avatar">AN</div>
+                        <div>
+                            <strong>Amina N.</strong>
+                            <span>Bean Farmer, Meru</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="landing-cta reveal-on-scroll" id="join">
+        <div class="container">
+            <div class="cta-panel">
+                <div>
+                    <span class="section-kicker section-kicker-light">Get Started</span>
+                    <h2>Start Selling Smarter Today</h2>
+                    <p>Join FarmConnect to discover buyers, monitor prices, and grow your market reach with less friction.</p>
+                </div>
+                <div class="cta-actions">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'accounts:dashboard' %}" class="btn cta-btn">Join FarmConnect</a>
+                    {% else %}
+                        <a href="{% url 'accounts:register' %}" class="btn cta-btn">Join FarmConnect</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- CTA Section -->
-<section class="cta-wrapper py-5">
-    <div class="container">
-        <div class="cta-section">
-            <h2>Ready to Get Started?</h2>
-            <p>Join thousands of farmers and buyers transforming agriculture in Kenya. Start connecting today.</p>
-            <div class="mt-4">
-                {% if not user.is_authenticated %}
-                    <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg fw-bold">
-                        <i class="bi bi-pencil-square me-2"></i>Sign Up Now
-                    </a>
-                {% else %}
-                    <a href="{% url 'accounts:dashboard' %}" class="btn btn-light btn-lg fw-bold">
-                        <i class="bi bi-house-door me-2"></i>Go to Dashboard
-                    </a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</section>
-
+</div>
 {% endblock %}
 
 {% block extra_js %}

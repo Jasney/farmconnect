@@ -23,11 +23,10 @@
                 {% endif %}
                 <div class="card-body">
                     <h5>{{ crop.name }}</h5>
-                    <p class="text-muted">{{ crop.crop_type }} at Ksh {{ crop.price }}</p>
+                    <p class="text-muted">{{ crop.get_type_display }} at Ksh {{ crop.price_per_unit }}</p>
                     <div class="d-flex gap-2">
                         <a href="{% url 'crop_detail' crop.id %}" class="btn btn-outline-success btn-sm">View</a>
-                        <a href="{% url 'crop_edit' crop.id %}" class="btn btn-success btn-sm">Edit</a>
-                        <a href="{% url 'crop_delete' crop.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        <a href="{% url 'crop_update' crop.id %}" class="btn btn-success btn-sm">Edit</a>
                     </div>
                 </div>
             </div>

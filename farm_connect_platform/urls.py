@@ -7,7 +7,7 @@ from accounts.views import contact
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('dashboard/', include('admin_panel.urls')),
+    path('dashboard/', include(('admin_panel.urls', 'admin_panel'), namespace='admin_panel')),
     path('', TemplateView.as_view(template_name='landing.html'), name='landing'),
     path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
     path('contact/', contact, name='contact'),

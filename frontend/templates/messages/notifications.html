@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}Notifications - Farm Connect{% endblock %}
@@ -22,15 +22,15 @@
                                             <div class="d-flex align-items-center mb-2">
                                                 <div class="notification-icon me-3">
                                                     {% if notification.notification_type == 'message' %}
-                                                        <i class="bi bi-chat-dots-fill text-primary" style="font-size: 1.5rem;"></i>
+                                                        <i class="bi bi-chat-dots-fill text-primary notification-type-icon"></i>
                                                     {% elif notification.notification_type == 'review' %}
-                                                        <i class="bi bi-star-fill text-warning" style="font-size: 1.5rem;"></i>
+                                                        <i class="bi bi-star-fill text-warning notification-type-icon"></i>
                                                     {% elif notification.notification_type == 'purchase' %}
-                                                        <i class="bi bi-cart-check-fill text-success" style="font-size: 1.5rem;"></i>
+                                                        <i class="bi bi-cart-check-fill text-success notification-type-icon"></i>
                                                     {% elif notification.notification_type == 'verification' %}
-                                                        <i class="bi bi-shield-check-fill text-info" style="font-size: 1.5rem;"></i>
+                                                        <i class="bi bi-shield-check-fill text-info notification-type-icon"></i>
                                                     {% else %}
-                                                        <i class="bi bi-info-circle-fill text-secondary" style="font-size: 1.5rem;"></i>
+                                                        <i class="bi bi-info-circle-fill text-secondary notification-type-icon"></i>
                                                     {% endif %}
                                                 </div>
                                                 <div class="flex-grow-1">
@@ -68,7 +68,7 @@
                         </div>
                     {% else %}
                         <div class="text-center py-5">
-                            <i class="bi bi-bell-slash text-muted" style="font-size: 4rem;"></i>
+                            <i class="bi bi-bell-slash text-muted empty-state-icon-xl"></i>
                             <h4 class="text-muted mt-3">No Notifications</h4>
                             <p class="text-muted">You're all caught up! New notifications will appear here.</p>
                         </div>
@@ -78,38 +78,6 @@
         </div>
     </div>
 </div>
-
-<style>
-.notification-item {
-    transition: all 0.2s ease;
-}
-
-.notification-item:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transform: translateY(-1px);
-}
-
-.notification-icon {
-    min-width: 50px;
-    text-align: center;
-}
-
-.notification-content h6 {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-}
-
-.notification-content p {
-    margin-bottom: 0.25rem;
-    line-height: 1.4;
-}
-
-.notifications-list {
-    max-height: 600px;
-    overflow-y: auto;
-}
-</style>
-
 <script>
 // Auto-refresh notifications every 30 seconds
 setInterval(function() {
